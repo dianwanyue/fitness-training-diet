@@ -125,8 +125,12 @@ flowchart LR
 │   ├── test/schema.sql              # 数据库建表脚本（11 张表）
 │   └── 技术说明.docx                 # 后端技术说明（待补充）
 ├── frontend/
-│   ├── test/prototype.html          # 手机端线框原型（单文件，浏览器直接打开）
-│   └── 技术说明.docx                 # 前端技术说明（待补充）
+│   ├── src/                         # Vue 页面、图表、模拟仓储、Axios 预留入口
+│   ├── tests/                       # 业务规则与仓储单元测试
+│   ├── e2e/                         # Playwright 浏览器交互测试
+│   ├── README.md                    # 启动、测试、联调与版本边界
+│   ├── test/prototype.html           # 保留第一阶段线框原型
+│   └── 技术说明.docx                  # 原占位文档保留（开发说明见 README）
 └── docs/
     ├── 2026-10-9/                   # 初版：项目介绍 1.0、可行性分析 2.0、项目开发计划书
     ├── 2026-10-18/                  # 国标版：FAR、SDP、项目介绍（AI 与移动 App 修订版）、甘特图
@@ -134,7 +138,15 @@ flowchart LR
     └── 里程碑w1-w2/                  # 第一阶段需求与技术方案说明书、线框原型、建表脚本
 ```
 
-> 当前仓库处于第一阶段，内容以**需求、方案与原型**为主，可运行源码将在后续增量中提交。
+> 前端已新增 Vue 3 移动优先模拟版本：账户与目标、训练、饮食、体重和统计流程可本地演示。**后端未连接，不代表 M3 联调验收完成**；AI、后台管理和 APK 尚未实现。安装、测试和联调边界见 [前端开发说明](frontend/README.md)。
+
+```sh
+cd frontend
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+Node.js >= 22.12（本次验证为 24.21），pnpm 11.28.5。默认访问 http://127.0.0.1:5173 ，点击“体验示例数据”即可预览；不要录入真实密码或敏感信息。
 
 **快速预览原型**：直接用浏览器打开 `frontend/test/prototype.html`。
 **初始化数据库**：`mysql -u <user> -p <dbname> < backend/test/schema.sql`
