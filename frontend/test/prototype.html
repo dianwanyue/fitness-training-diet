@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>健身训练与饮食管理系统 · 第一阶段线框原型</title>
+<style>
+  :root{
+    --line:#9aa4b2;      /* 线框描边 */
+    --soft:#dfe4ea;      /* 占位块 */
+    --soft2:#eef1f5;
+    --ink:#33383f;
+    --brand:#3b7ea1;     /* 强调色（仅用于主操作示意） */
+    --bg:#f5f6f8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;padding:24px;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  h1{font-size:18px;margin:0 0 4px;}
+  .sub{font-size:12px;color:#6b7480;margin-bottom:16px;}
+  .wrap{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;}
+  /* 页面索引 */
+  .nav{width:190px;background:#fff;border:1px solid var(--soft);border-radius:10px;padding:10px;}
+  .nav .grp{font-size:11px;color:#8d96a3;padding:8px 8px 4px;}
+  .nav button{
+    display:block;width:100%;text-align:left;border:0;background:transparent;
+    padding:7px 8px;margin:1px 0;border-radius:6px;cursor:pointer;
+    font-size:13px;color:#4a525c;
+  }
+  .nav button:hover{background:var(--soft2);}
+  .nav button.on{background:var(--brand);color:#fff;font-weight:600;}
+  /* 手机外壳 */
+  .phone{
+    width:378px;background:#fff;border:2px solid #cfd6de;border-radius:28px;
+    padding:8px;box-shadow:0 6px 24px rgba(0,0,0,.08);
+  }
+  .screen{border:1px solid #e2e6ec;border-radius:22px;overflow:hidden;background:#fff;}
+  .status{
+    height:26px;border-bottom:1px solid #eceef2;display:flex;align-items:center;
+    justify-content:space-between;padding:0 14px;font-size:11px;color:#8d96a3;
+  }
+  .appbar{
+    height:44px;border-bottom:1px solid #eceef2;display:flex;align-items:center;
+    justify-content:center;font-size:14px;font-weight:600;position:relative;
+  }
+  .appbar .back{position:absolute;left:12px;font-size:12px;color:var(--brand);font-weight:400;}
+  .appbar .act{position:absolute;right:12px;font-size:12px;color:var(--brand);font-weight:400;}
+  .body{padding:12px;min-height:560px;}
+  .tabbar{
+    display:flex;border-top:1px solid #eceef2;height:52px;align-items:center;
+    font-size:11px;color:#8d96a3;
+  }
+  .tabbar div{flex:1;text-align:center;}
+  .tabbar div.on{color:var(--brand);font-weight:600;}
+  /* 线框元素 */
+  .blk{border:1px dashed var(--line);border-radius:6px;background:var(--soft2);}
+  .solid{border:1px solid #c9d0d9;background:#e7ebf0;border-radius:6px;}
+  .btn{border:1px solid var(--brand);background:#e8f1f6;color:var(--brand);border-radius:6px;text-align:center;font-size:12px;padding:8px 0;}
+  .btn.primary{background:var(--brand);color:#fff;}
+  .field{border:1px solid #c9d0d9;border-radius:6px;height:36px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#a5adba;}
+  .row{display:flex;gap:8px;}
+  .col{flex:1;}
+  .lbl{font-size:11px;color:#6b7480;margin:10px 0 4px;}
+  .cap{font-size:11px;color:#8d96a3;line-height:1.5;}
+  .card{border:1px solid #e2e6ec;border-radius:8px;padding:10px;margin-bottom:10px;}
+  .card .t{font-size:12px;font-weight:600;margin-bottom:6px;}
+  .li{display:flex;justify-content:space-between;font-size:11px;padding:5px 0;border-bottom:1px dashed #e6e9ee;}
+  .li:last-child{border:0;}
+  .kpi{display:flex;gap:8px;margin-bottom:10px;}
+  .kpi .box{flex:1;border:1px solid #e2e6ec;border-radius:8px;padding:8px;text-align:center;}
+  .kpi .n{font-size:15px;font-weight:700;}
+  .kpi .u{font-size:10px;color:#8d96a3;}
+  .note{font-size:10px;color:#9aa4b2;border-left:2px solid #d8dee6;padding-left:6px;margin-top:8px;line-height:1.5;}
+  .page{display:none;}
+  .page.on{display:block;}
+  .legend{margin-top:20px;font-size:12px;color:#6b7480;background:#fff;border:1px solid var(--soft);border-radius:10px;padding:12px 16px;max-width:900px;}
+  .legend b{color:var(--ink);}
+  .chips{display:flex;gap:6px;margin-bottom:10px;}
+  .chip{border:1px solid #c9d0d9;border-radius:12px;padding:3px 10px;font-size:11px;color:#7b8492;}
+  .chip.on{border-color:var(--brand);background:#e8f1f6;color:var(--brand);}
+  .sw{display:inline-block;width:34px;height:18px;border:1px solid var(--brand);border-radius:9px;background:#e8f1f6;position:relative;vertical-align:middle;}
+  .sw::after{content:"";position:absolute;right:2px;top:2px;width:12px;height:12px;border-radius:50%;background:var(--brand);}
+</style>
+</head>
+<body>
+
+<h1>健身训练与饮食管理系统 · 手机端线框原型（第一阶段）</h1>
+<div class="sub">G13 方文锦、陈智杰 ｜ 375pt 基准宽度，线框仅示意布局与元素，非视觉稿 ｜ 2026-10-11</div>
+
+<div class="wrap">
+  <div class="nav">
+    <div class="grp">入门</div>
+    <button class="on" data-p="p-login">P01 登录 / 注册</button>
+    <div class="grp">主流程</div>
+    <button data-p="p-home">P02 首页 · 今日概览</button>
+    <button data-p="p-plan">P03 训练计划</button>
+    <button data-p="p-log">P04 训练记录录入</button>
+    <button data-p="p-diet">P05 饮食录入</button>
+    <button data-p="p-body">P06 体重记录</button>
+    <button data-p="p-stat">P07 统计分析</button>
+    <div class="grp">新增能力</div>
+    <button data-p="p-ai">P08 AI 健身分析</button>
+    <button data-p="p-ai-report">P09 AI 报告详情</button>
+    <div class="grp">其他</div>
+    <button data-p="p-me">P10 我的 / 目标设置</button>
+    <button data-p="p-admin">P11 后台管理</button>
+  </div>
+
+  <div class="phone">
+    <div class="screen">
+      <div class="status"><span>9:41</span><span>信号 · 电量</span></div>
+
+      <!-- P01 登录 -->
+      <div class="page on" id="p-login">
+        <div class="appbar">登录</div>
+        <div class="body">
+          <div class="blk" style="height:88px;display:flex;align-items:center;justify-content:center;color:#a5adba;font-size:12px;">应用图标 / 名称</div>
+          <div class="lbl">用户名</div><div class="field">请输入用户名</div>
+          <div class="lbl">密码</div><div class="field">请输入密码</div>
+          <div style="margin-top:14px;" class="btn primary">登 录</div>
+          <div style="margin-top:8px;" class="btn">注册新账号</div>
+          <div class="note">登录失败仅提示「用户名或密码错误」，不泄露账号是否存在；登录后由后端签发令牌，前端不保存明文口令。</div>
+        </div>
+      </div>
+
+      <!-- P02 首页 -->
+      <div class="page" id="p-home">
+        <div class="appbar">今日<span class="act">补录</span></div>
+        <div class="body">
+          <div class="chips"><span class="chip on">今日</span><span class="chip">本周</span><span class="chip">本月</span></div>
+          <div class="kpi">
+            <div class="box"><div class="n">1,486</div><div class="u">已摄入 kcal</div></div>
+            <div class="box"><div class="n">2,100</div><div class="u">目标 kcal</div></div>
+            <div class="box"><div class="n">2/3</div><div class="u">计划完成</div></div>
+          </div>
+          <div class="card"><div class="t">今日训练</div>
+            <div class="li"><span>杠铃卧推 3×10</span><span>已完成</span></div>
+            <div class="li"><span>坐姿划船 3×12</span><span>已完成</span></div>
+            <div class="li"><span>深蹲 4×8</span><span>未完成</span></div>
+          </div>
+          <div class="card"><div class="t">今日饮食</div>
+            <div class="li"><span>早餐</span><span>420 kcal</span></div>
+            <div class="li"><span>午餐</span><span>686 kcal</span></div>
+            <div class="li"><span>晚餐</span><span>380 kcal</span></div>
+            <div class="li"><span>加餐</span><span>未记录</span></div>
+          </div>
+          <div class="card"><div class="t">体重</div>
+            <div class="li"><span>今日</span><span>未记录</span></div>
+            <div class="li"><span>七日平均</span><span>68.4 kg（有效 6 天）</span></div>
+          </div>
+          <div class="note">缺失记录显示为空，不补零；未记录的餐次与体重均显示「未记录」。</div>
+        </div>
+        <div class="tabbar"><div class="on">首页</div><div>训练</div><div>饮食</div><div>统计</div><div>我的</div></div>
+      </div>
+
+      <!-- P03 训练计划 -->
+      <div class="page" id="p-plan">
+        <div class="appbar"><span class="back">‹</span>训练计划<span class="act">＋ 新建</span></div>
+        <div class="body">
+          <div class="chips"><span class="chip on">10-14 周二</span><span class="chip">10-15</span><span class="chip">10-16</span></div>
+          <div class="card"><div class="t">胸 + 三头　<span style="font-weight:400;color:#7b8492;">已完成</span></div>
+            <div class="li"><span>杠铃卧推</span><span>4 组 × 10 次 · 40kg</span></div>
+            <div class="li"><span>哑铃飞鸟</span><span>3 组 × 12 次 · 12kg</span></div>
+            <div class="row" style="margin-top:8px;"><div class="btn col">编辑</div><div class="btn col">打卡完成</div></div>
+          </div>
+          <div class="card"><div class="t">腿部　<span style="font-weight:400;color:#7b8492;">待执行</span></div>
+            <div class="li"><span>深蹲</span><span>4 组 × 8 次 · 60kg</span></div>
+            <div class="row" style="margin-top:8px;"><div class="btn col">编辑</div><div class="btn col">取消计划</div></div>
+          </div>
+          <div class="blk" style="height:46px;display:flex;align-items:center;justify-content:center;color:#a5adba;font-size:12px;">暂无计划时显示「暂无计划」</div>
+          <div class="note">计划描述「准备执行」的内容；编辑计划不得覆盖已有训练记录；取消的计划不计入完成率分母。</div>
+        </div>
+      </div>
+
+      <!-- P04 训练记录 -->
+      <div class="page" id="p-log">
+        <div class="appbar"><span class="back">‹</span>记录训练<span class="act">保存</span></div>
+        <div class="body">
+          <div class="lbl">关联计划（可选）</div><div class="field">腿部 · 10-14 ／ 或「临时训练」</div>
+          <div class="lbl">训练时间</div><div class="field">2026-10-14 18:30</div>
+          <div class="card"><div class="t">第 1 组</div>
+            <div class="row"><div class="field col" style="font-size:11px;">重量 60 kg</div><div class="field col" style="font-size:11px;">次数 8</div></div>
+          </div>
+          <div class="card"><div class="t">第 2 组</div>
+            <div class="row"><div class="field col" style="font-size:11px;">重量 60 kg</div><div class="field col" style="font-size:11px;">次数 8</div></div>
+          </div>
+          <div class="btn">＋ 添加一组</div>
+          <div class="btn" style="margin-top:8px;">＋ 添加动作</div>
+          <div class="note">实际组数可与计划不同；临时训练不关联计划，统计时单独计数。</div>
+        </div>
+      </div>
+
+      <!-- P05 饮食录入 -->
+      <div class="page" id="p-diet">
+        <div class="appbar"><span class="back">‹</span>饮食录入<span class="act">保存</span></div>
+        <div class="body">
+          <div class="chips"><span class="chip on">早餐</span><span class="chip">午餐</span><span class="chip">晚餐</span><span class="chip">加餐</span></div>
+          <div class="lbl">搜索食物</div><div class="field">输入名称，如「鸡胸肉」</div>
+          <div class="card"><div class="t">鸡胸肉（生重）· 来源：包装标签</div>
+            <div class="cap">每 100g：120 kcal ｜ 蛋白质 8g ｜ 碳水 0g ｜ 脂肪 3g</div>
+            <div class="lbl">摄入克重</div><div class="field">150 g</div>
+            <div class="cap" style="margin-top:6px;">本项计入：180 kcal ｜ 蛋白质 12g</div>
+            <div class="row" style="margin-top:8px;"><div class="btn col">修改</div><div class="btn col">删除</div></div>
+          </div>
+          <div class="btn">＋ 继续添加食物</div>
+          <div class="note">单项摄入量 = 每 100g 营养值 × 实际克重 ÷ 100；先保留计算精度，界面按统一位数显示；记录保存营养快照。</div>
+        </div>
+      </div>
+
+      <!-- P06 体重 -->
+      <div class="page" id="p-body">
+        <div class="appbar"><span class="back">‹</span>体重记录</div>
+        <div class="body">
+          <div class="blk" style="height:120px;display:flex;align-items:center;justify-content:center;color:#a5adba;font-size:12px;">体重趋势折线图（ECharts）</div>
+          <div class="lbl">日期</div><div class="field">2026-10-14</div>
+          <div class="lbl">体重（kg）</div><div class="field">68.2</div>
+          <div style="margin-top:12px;" class="btn primary">保存（同日覆盖）</div>
+          <div class="card" style="margin-top:12px;"><div class="t">历史</div>
+            <div class="li"><span>10-13</span><span>68.5 kg</span></div>
+            <div class="li"><span>10-12</span><span>68.7 kg</span></div>
+            <div class="li"><span>10-11</span><span>未记录</span></div>
+          </div>
+          <div class="note">同一用户同一天只保留一条记录，重复保存即更新；未记录日期在图上断开，不连线补零。</div>
+        </div>
+      </div>
+
+      <!-- P07 统计 -->
+      <div class="page" id="p-stat">
+        <div class="appbar">统计分析</div>
+        <div class="body">
+          <div class="chips"><span class="chip on">7 天</span><span class="chip">30 天</span><span class="chip">自定义</span></div>
+          <div class="card"><div class="t">训练完成率</div>
+            <div class="blk" style="height:74px;display:flex;align-items:center;justify-content:center;color:#a5adba;font-size:11px;">环形图 71%（已完成 10 ／ 未取消 14）</div>
+          </div>
+          <div class="card"><div class="t">每日能量摄入</div>
+            <div class="blk" style="height:96px;display:flex;align-items:center;justify-content:center;color:#a5adba;font-size:11px;">柱状图（缺失日留空，不显示为 0）</div>
+          </div>
+          <div class="card"><div class="t">体重趋势与七日平均</div>
+            <div class="blk" style="height:96px;display:flex;align-items:center;justify-content:center;color:#a5adba;font-size:11px;">折线图 + 平均线（标注有效天数）</div>
+          </div>
+          <div class="note">三张图表均可切换时间范围；无计划时显示「暂无计划」，不计算完成率。</div>
+        </div>
+        <div class="tabbar"><div>首页</div><div>训练</div><div>饮食</div><div class="on">统计</div><div>我的</div></div>
+      </div>
+
+      <!-- P08 AI 分析 -->
+      <div class="page" id="p-ai">
+        <div class="appbar"><span class="back">‹</span>AI 健身分析</div>
+        <div class="body">
+          <div class="card"><div class="t">数据使用授权</div>
+            <div class="cap">仅用于生成本人健身与饮食分析；只发送分析所需字段，不含姓名、手机号等身份信息。授权可撤回，报告可删除。</div>
+            <div class="li" style="margin-top:8px;"><span>授权状态</span><span class="sw"></span></div>
+          </div>
+          <div class="chips"><span class="chip on">最近 30 天</span><span class="chip">最近 7 天</span></div>
+          <div class="cap">将汇总：体重记录、每日营养摄入与目标差异、训练计划与执行情况（无需重复输入）。</div>
+          <div style="margin-top:12px;" class="btn primary">一键分析</div>
+          <div class="card" style="margin-top:14px;"><div class="t">历史报告</div>
+            <div class="li"><span>10-07 ~ 10-14</span><span>查看 ›</span></div>
+            <div class="li"><span>09-28 ~ 10-06</span><span>查看 ›</span></div>
+          </div>
+          <div class="note">模型不可用或超时时，保留原始统计并提示稍后重试，不编造报告。</div>
+        </div>
+      </div>
+
+      <!-- P09 AI 报告 -->
+      <div class="page" id="p-ai-report">
+        <div class="appbar"><span class="back">‹</span>分析报告<span class="act">删除</span></div>
+        <div class="body">
+          <div class="cap">分析区间：2026-09-14 ~ 2026-10-14 ｜ 有效记录 22 天 ｜ 生成时间 10-14 20:05</div>
+          <div class="card"><div class="t">数据概况</div><div class="cap">文本占位：区间内记录完整性、缺失日期标注「未记录」。</div></div>
+          <div class="card"><div class="t">训练执行</div><div class="cap">文本占位：计划数、完成数、完成率、临时训练次数。</div></div>
+          <div class="card"><div class="t">营养摄入</div><div class="cap">文本占位：能量与三大营养素均值、与目标差异。</div></div>
+          <div class="card"><div class="t">体重趋势</div><div class="cap">文本占位：区间变化与七日平均（标注有效天数）。</div></div>
+          <div class="card"><div class="t">可采取的调整</div><div class="cap">文本占位：一般性训练与饮食调整建议。</div></div>
+          <div class="note">报告仅供一般健身参考，不作疾病诊断或治疗建议；涉及伤病或特殊饮食需求请咨询专业人士。模型数值与原始摘要不一致时不作为确定结论。</div>
+        </div>
+      </div>
+
+      <!-- P10 我的 -->
+      <div class="page" id="p-me">
+        <div class="appbar">我的</div>
+        <div class="body">
+          <div class="card"><div class="t">个人资料</div>
+            <div class="li"><span>昵称</span><span>编辑 ›</span></div>
+            <div class="li"><span>身高</span><span>175 cm</span></div>
+            <div class="li"><span>出生日期</span><span>2004-05-11</span></div>
+          </div>
+          <div class="card"><div class="t">每日目标（按生效日期保留历史）</div>
+            <div class="li"><span>能量</span><span>2,100 kcal</span></div>
+            <div class="li"><span>蛋白质</span><span>120 g</span></div>
+            <div class="li"><span>碳水</span><span>250 g</span></div>
+            <div class="li"><span>脂肪</span><span>60 g</span></div>
+            <div style="margin-top:8px;" class="btn">＋ 新增生效日期目标</div>
+          </div>
+          <div class="card"><div class="t">隐私与授权</div>
+            <div class="li"><span>AI 分析授权</span><span>已授权 · 撤回 ›</span></div>
+            <div class="li"><span>报告数据</span><span>删除历史 ›</span></div>
+          </div>
+          <div class="btn">退出登录</div>
+        </div>
+        <div class="tabbar"><div>首页</div><div>训练</div><div>饮食</div><div>统计</div><div class="on">我的</div></div>
+      </div>
+
+      <!-- P11 后台管理 -->
+      <div class="page" id="p-admin">
+        <div class="appbar"><span class="back">‹</span>后台管理<span class="act">＋ 新增</span></div>
+        <div class="body">
+          <div class="chips"><span class="chip on">动作库</span><span class="chip">食物库</span><span class="chip">账户</span></div>
+          <div class="card"><div class="t">动作维护</div>
+            <div class="li"><span>杠铃卧推 · 胸 · 杠铃</span><span>编辑 ›</span></div>
+            <div class="li"><span>深蹲 · 腿 · 杠铃</span><span>编辑 ›</span></div>
+          </div>
+          <div class="card"><div class="t">食物维护（每 100g + 来源 + 生熟）</div>
+            <div class="li"><span>鸡胸肉 · 生重 · 包装标签</span><span>编辑 ›</span></div>
+            <div class="li"><span>米饭 · 熟重 · 食物成分资料</span><span>编辑 ›</span></div>
+          </div>
+          <div class="card"><div class="t">账户状态</div>
+            <div class="li"><span>user_002</span><span>启用 ／ 停用</span></div>
+          </div>
+          <div class="note">管理接口独立鉴权，普通用户无法调用；关键操作留痕。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <b>原型说明</b>：本原型为第一阶段「需求确认」用线框图，用于对齐手机端页面、元素与关键口径，不作为视觉设计稿。
+  统一基准宽度 375pt（iPhone SE 级别最小适配宽度），触控目标不小于 44pt；底部标签栏 5 项：首页 / 训练 / 饮食 / 统计 / 我的。
+  <br><b>已固化的口径</b>：缺失记录显示为空不补零；同日体重唯一；完成率 = 已完成计划数 ÷ 未取消计划总数；临时训练单独计数；营养值按每 100g 换算并保存快照；AI 分析默认最近 30 天可切 7 天，授权可撤回、报告可删除。
+  <br><b>待第二阶段确认项</b>：图表配色与交互细节、食物搜索联想规则、后台管理是否跟随手机端。
+</div>
+
+<script>
+  var btns = document.querySelectorAll('.nav button');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.nav button').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+      document.getElementById(b.dataset.p).classList.add('on');
+    });
+  });
+</script>
+</body>
+</html>

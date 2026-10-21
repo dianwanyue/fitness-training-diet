@@ -1,0 +1,15 @@
+# 操作系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Office / WPS 临时文件
+~$*
+*.tmp
+
+# 日志与缓存
+*.log
+node_modules/
+__pycache__/
+.idea/
+.vscode/

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="fitness-training-diet" company="" webLink="http://" view-date="2026-10-01" view-index="0" gantt-divider-location="403" resource-divider-location="300" version="3.3.3316" locale="zh_CN">
+    <description/>
+    <view zooming-state="default:8" id="gantt-chart">
+        <field id="tpd3" name="名称" width="229" order="0"/>
+        <field id="tpd4" name="开始日期" width="86" order="1"/>
+        <field id="tpd5" name="结束日期" width="87" order="2"/>
+        <field id="tpd15" name="备注" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+        <timeline><![CDATA[0]]></timeline>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="名称" width="199" order="0"/>
+        <field id="1" name="默认角色" width="82" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" uid="ce07d5c011ff4e2f82cdfbca048b08b9" name="需求冻结与技术准备" color="#8cb6ce" meeting="false" start="2026-09-28" duration="14" complete="0" priority="2" expand="true">
+            <depend id="1" type="1" difference="7" hardness="Strong"/>
+            <depend id="8" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="1" uid="f70c1f90adae4f3abf6d7467d07fd782" name="数据层与后端核心" color="#8cb6ce" meeting="false" start="2026-10-07" duration="21" complete="0" thirdDate="2026-10-05" thirdDate-constraint="1" expand="true">
+            <depend id="2" type="1" difference="14" hardness="Strong"/>
+            <depend id="3" type="2" difference="14" hardness="Strong"/>
+        </task>
+        <task id="2" uid="15f0915878a941ecbc546bb812bff366" name="前端页面与图表" meeting="false" start="2026-10-27" duration="21" complete="0" expand="true">
+            <depend id="3" type="2" difference="0" hardness="Strong"/>
+            <depend id="8" type="2" difference="7" hardness="Strong"/>
+        </task>
+        <task id="3" uid="5421ee20b2ca4e389a7cff1354238baf" name="AI分析模块" meeting="false" start="2026-11-25" duration="21" complete="0" thirdDate="2026-11-09" thirdDate-constraint="1" expand="true">
+            <depend id="4" type="2" difference="0" hardness="Strong"/>
+            <depend id="6" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="8" uid="2217efe7e63a466081fbde4366801d14" name="手机布局适配与 Capacitor 打包" meeting="false" start="2026-12-04" duration="10" complete="0" expand="true"/>
+        <task id="4" uid="0f4c216411f748a8aa3d10d26f44c5ac" name="真机安装与分析流程验证" meeting="false" start="2026-12-24" duration="3" complete="0" expand="true">
+            <depend id="6" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="6" uid="db8178fee6a34fd0a59bd8f62c03ae23" name="集成测试与验收" meeting="false" start="2026-12-29" duration="18" complete="0" expand="true">
+            <depend id="5" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="5" uid="a25bd9dc25b7466bbebebc9f24483ab2" name="文档与结项答辩" meeting="false" start="2027-01-22" duration="10" complete="0" expand="true"/>
+    </tasks>
+    <resources>
+        <resource id="0" name="方文锦" function="Default:1" contacts="" phone="19700743299">
+            <rate name="standard" value="10"/>
+        </resource>
+        <resource id="1" name="陈智杰" function="Default:0" contacts="" phone="18657183375">
+            <rate name="standard" value="10"/>
+        </resource>
+    </resources>
+    <allocations>
+        <allocation task-id="0" resource-id="0" function="Default:1" responsible="false" load="90.0"/>
+        <allocation task-id="1" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="3" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="4" resource-id="0" function="Default:1" responsible="true" load="50.0"/>
+        <allocation task-id="6" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="5" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="0" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="2" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="3" resource-id="1" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="8" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="4" resource-id="1" function="Default:0" responsible="false" load="50.0"/>
+        <allocation task-id="6" resource-id="1" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="5" resource-id="1" function="Default:0" responsible="false" load="50.0"/>
+    </allocations>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
