@@ -78,7 +78,7 @@ flowchart LR
 
 ## 数据库设计
 
-建表脚本见 [`backend/test/schema.sql`](backend/test/schema.sql)（MySQL 8.4 / InnoDB / utf8mb4，共 11 张表）。
+建表脚本见 [`backend/test/schema.sql`](backend/test/schema.sql)（MySQL 8.4 / InnoDB / utf8mb4，共 12 张表）。
 
 | 表 | 用途 | 关键约束 |
 | --- | --- | --- |
