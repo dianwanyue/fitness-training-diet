@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="740" viewBox="0 0 1040 740" font-family="Microsoft YaHei,SimSun,serif">
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker><marker id="b" markerWidth="10" markerHeight="10" refX="1" refY="5" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#000"/></marker></defs>
+<rect width="1040" height="740" fill="#fff"/>
+<rect x="30" y="52" width="980" height="150" fill="none" stroke="#999" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="40" y="65.0" font-size="9.5" text-anchor="start" dominant-baseline="middle" fill="#666">客户端层（Android 手机 / 本地调试浏览器）</text>
+<rect x="30" y="232" width="980" height="300" fill="none" stroke="#999" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="40" y="245.0" font-size="9.5" text-anchor="start" dominant-baseline="middle" fill="#666">服务端层（Spring Boot 3，课程演示服务器）</text>
+<rect x="30" y="562" width="980" height="150" fill="none" stroke="#999" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="40" y="575.0" font-size="9.5" text-anchor="start" dominant-baseline="middle" fill="#666">数据层</text>
+<rect x="40" y="92" width="150" height="72" fill="#fff" stroke="#000" stroke-width="1.6"/>
+<text x="115.0" y="128.0" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">用户 / 管理员</text>
+<rect x="225" y="92" width="165" height="72" rx="10" fill="#fff" stroke="#000" stroke-width="1.6"/>
+<text x="307.5" y="121.49" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">Capacitor 容器</text>
+<text x="307.5" y="134.51" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">Android APK</text>
+<rect x="425" y="92" width="205" height="72" rx="10" fill="#fff" stroke="#000" stroke-width="1.6"/>
+<text x="527.5" y="121.49" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">Vue 3 页面</text>
+<text x="527.5" y="134.51" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">Router / ECharts / Axios</text>
+<rect x="665" y="92" width="150" height="72" rx="10" fill="#fff" stroke="#000" stroke-width="1.6"/>
+<text x="740.0" y="121.49" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">HTTPS 通道</text>
+<text x="740.0" y="134.51" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">JSON + Bearer 令牌</text>
+<rect x="425" y="258" width="205" height="62" rx="10" fill="#fff" stroke="#000" stroke-width="1.6"/>
+<text x="527.5" y="282.49" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">Spring Security</text>
+<text x="527.5" y="295.51" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">JWT 校验 + 用户归属校验</text>
+<rect x="425" y="348" width="205" height="62" rx="10" fill="#fff" stroke="#000" stroke-width="1.6"/>
+<text x="527.5" y="372.49" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">Controller 控制层</text>
+<text x="527.5" y="385.51" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">参数校验（正则 / 区间）</text>
+<rect x="405" y="438" width="245" height="64" rx="10" fill="#fff" stroke="#000" stroke-width="1.6"/>
+<text x="527.5" y="463.49" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">业务加工 P1–P6</text>
+<text x="527.5" y="476.51" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">账户·训练·饮食·身体·统计·AI</text>
+<rect x="150" y="438" width="160" height="64" rx="10" fill="#fff" stroke="#000" stroke-width="1.6"/>
+<text x="230.0" y="463.49" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">Spring Data JPA</text>
+<text x="230.0" y="476.51" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">映射 / 事务</text>
+<line x1="130" y1="600" x2="380" y2="600" stroke="#000" stroke-width="1.6"/>
+<line x1="130" y1="666" x2="380" y2="666" stroke="#000" stroke-width="1.6"/>
+<text x="255.0" y="633.0" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">D1–D12  12 张表（MySQL 8.4）</text>
+<rect x="770" y="600" width="200" height="66" rx="10" fill="#fff" stroke="#000" stroke-width="1.6"/>
+<text x="870.0" y="626.49" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">Ollama 本地模型</text>
+<text x="870.0" y="639.51" font-size="10.5" text-anchor="middle" dominant-baseline="middle" fill="#000">Qwen3-4B-Instruct-2507</text>
+<path d="M190,128 L225,128" fill="none" stroke="#000" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="207" y="78.0" font-size="9.5" text-anchor="middle" dominant-baseline="middle" fill="#000" style="paint-order:stroke;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round">操作</text>
+<path d="M390,128 L425,128" fill="none" stroke="#000" stroke-width="1.4" marker-end="url(#a)"/>
+<path d="M630,128 L665,128" fill="none" stroke="#000" stroke-width="1.4" marker-end="url(#a)"/>
+<path d="M760,164 L760,196 L540,196 L540,258" fill="none" stroke="#000" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="600" y="186.0" font-size="9.5" text-anchor="middle" dominant-baseline="middle" fill="#000" style="paint-order:stroke;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round">HTTPS 请求</text>
+<path d="M500,258 L500,222 L700,222 L700,164" fill="none" stroke="#000" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="660" y="237.0" font-size="9.5" text-anchor="middle" dominant-baseline="middle" fill="#000" style="paint-order:stroke;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round">JSON 响应</text>
+<path d="M527,320 L527,348" fill="none" stroke="#000" stroke-width="1.4" marker-end="url(#a)"/>
+<path d="M527,410 L527,438" fill="none" stroke="#000" stroke-width="1.4" marker-end="url(#a)"/>
+<path d="M405,470 L310,470" fill="none" stroke="#000" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="357.5" y="457.0" font-size="9.5" text-anchor="middle" dominant-baseline="middle" fill="#000" style="paint-order:stroke;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round">调用</text>
+<path d="M230,502 L230,600" fill="none" stroke="#000" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="244.0" y="551.0" font-size="9.5" text-anchor="start" dominant-baseline="middle" fill="#000" style="paint-order:stroke;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round">读写（事务）</text>
+<path d="M650,470 L870,470 L870,600" fill="none" stroke="#000" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="742" y="458.0" font-size="9.5" text-anchor="middle" dominant-baseline="middle" fill="#000" style="paint-order:stroke;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round">结构化摘要 ≤8KB</text>
+<path d="M820,600 L820,530 L600,530 L600,502" fill="none" stroke="#000" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="700" y="544.0" font-size="9.5" text-anchor="middle" dominant-baseline="middle" fill="#000" style="paint-order:stroke;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round">分析文本 / 降级</text>
+</svg>
