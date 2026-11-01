@@ -22,3 +22,6 @@ frontend/.env
 frontend/.env.local
 frontend/.env.*.local
 .pnpm-store/
+
+# 文档流水线中间产物（可由源材料重新生成）
+output/

@@ -86,7 +86,7 @@ CREATE TABLE `food` (
     `carb_per_100g` DECIMAL(8,2)  NOT NULL DEFAULT 0      COMMENT '每100g碳水化合物（g）',
     `fat_per_100g`  DECIMAL(8,2)  NOT NULL DEFAULT 0      COMMENT '每100g脂肪（g）',
     `state`         VARCHAR(16)   NOT NULL DEFAULT 'RAW'  COMMENT '状态：RAW 生重 / COOKED 熟重 / BRAND 品牌规格',
-    `source`        VARCHAR(255)  DEFAULT NULL            COMMENT '营养数据来源（包装标签或资料名称）',
+    `source`        VARCHAR(255)  DEFAULT NULL            COMMENT '营养数据来源（包装标签或资料名称）；接口层新增/修改时必填，库表保留可空以兼容种子与历史数据',
     `is_public`     TINYINT(1)    NOT NULL DEFAULT 1      COMMENT '是否公共食物：1 公共 / 0 个人自定义',
     `created_by`    BIGINT        DEFAULT NULL            COMMENT '创建人',
     `status`        VARCHAR(16)   NOT NULL DEFAULT 'ACTIVE' COMMENT '状态：ACTIVE / DISABLED',
