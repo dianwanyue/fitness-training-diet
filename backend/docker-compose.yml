@@ -1,0 +1,45 @@
+# =====================================================================
+# FTDMS 本地开发用数据库编排文件
+# ---------------------------------------------------------------------
+# 用途：一条命令起 MySQL 8.4，并自动建库、建表、灌入种子数据，
+#       免去手工执行 SQL 的步骤（"简化启动流程"的落地方式之一）。
+#
+# 使用：
+#   docker compose up -d        # 启动
+#   docker compose logs -f db   # 看初始化日志
+#   docker compose down         # 停止（数据保留在命名卷中）
+#   docker compose down -v      # 停止并删除数据（重置）
+#
+# 初始化脚本只在"数据卷为空"的首次启动时执行；修改脚本后需 down -v 再起。
+# =====================================================================
+services:
+  db:
+    image: mysql:8.4
+    container_name: ftdms-mysql
+    restart: unless-stopped
+    environment:
+      # root 仅用于初始化，应用使用下方创建的 fitness_app 账号
+      MYSQL_ROOT_PASSWORD: root_pwd_change_me
+      MYSQL_DATABASE: fitness_db
+      MYSQL_USER: fitness_app
+      MYSQL_PASSWORD: fitness_app_pwd
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --default-time-zone=+08:00
+    ports:
+      - "3306:3306"
+    volumes:
+      - ftdms-mysql-data:/var/lib/mysql
+      # 首次启动按文件名顺序执行：01 建表 → 02 种子数据
+      - ./src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./src/main/resources/db/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-ufitness_app", "-pfitness_app_pwd"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  ftdms-mysql-data:

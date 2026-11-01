@@ -1,0 +1,97 @@
+# =====================================================================
+# 健身训练与饮食管理系统 · 后端主配置（默认连接 MySQL 8.4）
+# ---------------------------------------------------------------------
+# 所有可变项均写成 ${环境变量:默认值} 形式：
+#   · 本机直接启动时使用默认值，无需改文件；
+#   · 服务器部署时通过环境变量覆盖（见 backend/技术说明.docx 第 3 章）。
+# 业务时区统一 Asia/Shanghai：日期字段一律按该时区截断与归属。
+# =====================================================================
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  tomcat:
+    # 演示服务器资源有限，限制工作线程与连接数，避免压测时线程暴涨
+    threads:
+      max: 50
+      min-spare: 5
+    max-connections: 500
+
+spring:
+  application:
+    name: ftdms-backend
+
+  # ---------------- 数据源（MySQL 8.4） ----------------
+  datasource:
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/fitness_db?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true}
+    username: ${DB_USERNAME:fitness_app}
+    password: ${DB_PASSWORD:fitness_app_pwd}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: ftdms-pool
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 10000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # ---------------- 持久层（JPA / Hibernate） ----------------
+  jpa:
+    # 表结构由 db/schema.sql 统一维护，禁止由 Hibernate 反向改表
+    hibernate:
+      ddl-auto: none
+    open-in-view: false          # 关闭 OSIV，避免连接被视图层长期占用
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Shanghai   # 与业务时区保持一致，DATETIME 按此时区读写
+          batch_size: 30
+        order_inserts: true
+        order_updates: true
+    show-sql: ${JPA_SHOW_SQL:false}
+
+  # ---------------- 建表与种子数据（幂等） ----------------
+  # schema.sql 使用 CREATE TABLE IF NOT EXISTS，data.sql 使用 INSERT IGNORE，
+  # 因此每次启动执行也不会破坏已有数据；已有库可改为 never 以加快启动。
+  sql:
+    init:
+      mode: ${SQL_INIT_MODE:always}
+      schema-locations: classpath:db/schema.sql
+      data-locations: classpath:db/data.sql
+      continue-on-error: false
+      encoding: UTF-8
+
+  # ---------------- JSON 序列化 ----------------
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null    # 空值不输出，避免 data:null 污染前端判断
+    serialization:
+      write-dates-as-timestamps: false
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: false     # 前端多传字段不报错，便于灰度
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+# ---------------- 业务自定义配置 ----------------
+app:
+  jwt:
+    # 生产环境必须用环境变量 JWT_SECRET 覆盖；长度需 ≥ 32 字节（HS256 要求）
+    secret: ${JWT_SECRET:ftdms-dev-only-secret-key-change-in-production-2026}
+    expire-seconds: ${JWT_EXPIRE_SECONDS:7200}
+    issuer: ftdms
+  timezone: Asia/Shanghai
+  # 登录失败限流：同一账号在 window-seconds 内连续失败 max-failures 次后暂时拒绝
+  login-guard:
+    max-failures: 5
+    window-seconds: 300
+
+# ---------------- 日志 ----------------
+logging:
+  level:
+    root: INFO
+    com.g13.ftdms: ${LOG_LEVEL:INFO}
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"
