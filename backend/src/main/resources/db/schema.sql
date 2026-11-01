@@ -1,9 +1,11 @@
 -- =====================================================================
--- 健身训练与饮食管理系统（FTDMS）· 运行时建表脚本（MySQL 8.4 / InnoDB / utf8mb4）
+-- 健身训练与饮食管理系统（FTDMS）· 运行时建表脚本（MySQL 5.7 ~ 8.4 / InnoDB / utf8mb4）
 -- ---------------------------------------------------------------------
 -- 与 backend/test/schema.sql（M1 冻结基线）的差异：
 --   1. 全部改为 CREATE TABLE IF NOT EXISTS，去掉 DROP TABLE，使脚本可重复执行；
---   2. 内容与基线一一对应（12 张表、字段、索引、唯一约束完全一致）。
+--   2. 排序规则用 utf8mb4_unicode_ci：5.7 不支持 8.0 才有的 utf8mb4_0900_ai_ci，
+--      而 unicode_ci 在 5.7 与 8.x 上均可用，保证"下载即跑"；
+--   3. 表、字段、索引、唯一约束与基线一一对应，未做结构改动。
 -- 执行时机：应用启动时由 spring.sql.init 自动执行（见 application.yml），
 --           也可以手工执行：mysql -u<user> -p <db> < db/schema.sql
 -- =====================================================================
@@ -30,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `user_account` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_user_username` (`username`),
     KEY `idx_user_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户账户表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户账户表';
 
 -- 1.2 每日能量与营养目标：按 effective_date 保留历史版本，同日重复提交为覆盖
 CREATE TABLE IF NOT EXISTS `daily_goal` (
@@ -46,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `daily_goal` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_goal_user_date` (`user_id`, `effective_date`),
     KEY `idx_goal_date` (`effective_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='每日能量与营养目标表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='每日能量与营养目标表';
 
 -- ---------------------------------------------------------------------
 -- 2. 基础数据（动作库 / 食物库）
@@ -66,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `exercise` (
     PRIMARY KEY (`id`),
     KEY `idx_exercise_name` (`name`),
     KEY `idx_exercise_public_status` (`is_public`, `status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='动作库表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='动作库表';
 
 -- 2.2 食物库：营养值统一按每 100 g 标注，并记录来源与生熟状态
 CREATE TABLE IF NOT EXISTS `food` (
@@ -87,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `food` (
     PRIMARY KEY (`id`),
     KEY `idx_food_name` (`name`),
     KEY `idx_food_public_status` (`is_public`, `status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='食物库表（每100g营养值）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='食物库表（每100g营养值）';
 
 -- ---------------------------------------------------------------------
 -- 3. 训练计划与记录
@@ -106,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `training_plan` (
     PRIMARY KEY (`id`),
     KEY `idx_plan_user_date` (`user_id`, `planned_date`),
     KEY `idx_plan_user_status` (`user_id`, `status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='训练计划表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='训练计划表';
 
 -- 3.2 计划动作：一个计划含 1–20 条明细，与动作库关联
 CREATE TABLE IF NOT EXISTS `plan_item` (
@@ -120,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `plan_item` (
     PRIMARY KEY (`id`),
     KEY `idx_item_plan` (`plan_id`),
     KEY `idx_item_exercise` (`exercise_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='训练计划动作表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='训练计划动作表';
 
 -- 3.3 训练记录：保存"实际完成"情况，plan_id 为空表示临时训练
 CREATE TABLE IF NOT EXISTS `workout_log` (
@@ -134,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `workout_log` (
     PRIMARY KEY (`id`),
     KEY `idx_log_user_date` (`user_id`, `log_date`),
     KEY `idx_log_plan` (`plan_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='训练记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='训练记录表';
 
 -- 3.4 训练组明细：一条训练记录含 1–50 组
 CREATE TABLE IF NOT EXISTS `workout_set` (
@@ -148,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `workout_set` (
     PRIMARY KEY (`id`),
     KEY `idx_set_log` (`log_id`),
     KEY `idx_set_exercise` (`exercise_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='训练组明细表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='训练组明细表';
 
 -- ---------------------------------------------------------------------
 -- 4. 饮食与身体数据
@@ -172,7 +174,7 @@ CREATE TABLE IF NOT EXISTS `diet_record` (
     PRIMARY KEY (`id`),
     KEY `idx_diet_user_date` (`user_id`, `record_date`),
     KEY `idx_diet_food` (`food_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='饮食记录表（含营养快照）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='饮食记录表（含营养快照）';
 
 -- 4.2 体重记录：同一用户同一日期唯一，重复提交按更新处理
 CREATE TABLE IF NOT EXISTS `body_record` (
@@ -185,7 +187,7 @@ CREATE TABLE IF NOT EXISTS `body_record` (
     `updated_at`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_body_user_date` (`user_id`, `record_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='体重记录表（同日唯一）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='体重记录表（同日唯一）';
 
 -- ---------------------------------------------------------------------
 -- 5. AI 分析：授权与报告（数据层已就位，接口在 W7 实现）
@@ -203,7 +205,7 @@ CREATE TABLE IF NOT EXISTS `ai_consent` (
     `updated_at`  DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
     KEY `idx_consent_user_status` (`user_id`, `status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='AI分析授权表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI分析授权表';
 
 -- 5.2 分析报告：保存输入摘要与模型版本，支持追溯、降级标记与删除
 CREATE TABLE IF NOT EXISTS `ai_report` (
@@ -220,4 +222,4 @@ CREATE TABLE IF NOT EXISTS `ai_report` (
     PRIMARY KEY (`id`),
     KEY `idx_report_user_created` (`user_id`, `created_at`),
     KEY `idx_report_period` (`user_id`, `period_start`, `period_end`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='AI分析报告表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI分析报告表';

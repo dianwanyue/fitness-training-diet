@@ -1,6 +1,6 @@
 # FTDMS 后端服务（数据层与后端核心）
 
-健身训练与饮食管理系统（FTDMS）的后端实现，Spring Boot 3.3 + Spring Data JPA + Spring Security(JWT) + MySQL 8.4。
+健身训练与饮食管理系统（FTDMS）的后端实现，Spring Boot 3.3 + Spring Data JPA + Spring Security(JWT) + MySQL 5.7+（验收环境 8.4）。
 本目录交付**数据层与后端核心**：账户鉴权、每日目标、训练计划与记录、饮食记录、身体数据、统计分析、后台管理。
 AI 分析接口（G 族）按 SDP 安排在 W7 实现，本次不包含（数据表与实体已就位）。
 
@@ -22,14 +22,14 @@ H2 数据文件位于 `backend/data/ftdms.mv.db`，删除该目录即可重置�
 # 1) 准备数据库（任选其一）
 docker compose up -d                       # 自动建库、建表、灌入种子数据
 # 或手工：
-mysql -uroot -p -e "CREATE DATABASE fitness_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
+mysql -uroot -p -e "CREATE DATABASE fitness_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 mysql -uroot -p -e "CREATE USER 'fitness_app'@'%' IDENTIFIED BY 'fitness_app_pwd'; GRANT ALL ON fitness_db.* TO 'fitness_app'@'%';"
 
 # 2) 启动（表结构与种子数据由应用自动初始化）
 mvn spring-boot:run
 ```
 
-默认连接 `127.0.0.1:3306/fitness_db`，账号 `fitness_app / fitness_app_pwd`。
+默认连接 `127.0.0.1:3306/fitness_db`，账号 `fitness_app / fitness_app_pwd`。建表脚本使用 `utf8mb4_unicode_ci`，MySQL 5.7 与 8.x 均可直接执行（已在 5.7.44 上验证）。
 可用环境变量覆盖：`DB_URL`、`DB_USERNAME`、`DB_PASSWORD`、`JWT_SECRET`、`SERVER_PORT`。
 
 ### 方式三：打包后运行
@@ -44,7 +44,7 @@ java -jar target/ftdms-backend-1.0.0.jar
 ```
 backend/
 ├── pom.xml                        # 依赖与构建配置
-├── docker-compose.yml             # MySQL 8.4 一键起库（含建表脚本挂载）
+├── docker-compose.yml             # MySQL 8.4 一键起库（含建表脚本挂载；本机如为 5.7，用上面的手工方式即可）
 ├── 技术说明.docx                   # 交付文档：结构、部署、配置、调试
 ├── test/schema.sql                # M1 冻结的建表基线（历史留档，不参与运行）
 └── src/main/
