@@ -1,5 +1,6 @@
 package com.g13.ftdms.security;
 
+import com.g13.ftdms.repository.UserAccountRepository;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -37,10 +38,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final TokenBlacklist tokenBlacklist;
+    private final UserAccountRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtService jwtService, TokenBlacklist tokenBlacklist) {
+    public JwtAuthenticationFilter(JwtService jwtService, TokenBlacklist tokenBlacklist,
+                                   UserAccountRepository userRepository) {
         this.jwtService = jwtService;
         this.tokenBlacklist = tokenBlacklist;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -64,10 +68,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.debug("令牌已登出，拒绝使用 path={}", request.getRequestURI());
                 SecurityContextHolder.clearContext();
             } else {
-                UserPrincipal principal = jwtService.parse(token);
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                UserPrincipal claims = jwtService.parse(token);
+                // JWT remains signed after an account is disabled/deleted. Check the current row
+                // on every request so account management is an effective authorization boundary.
+                var account = userRepository.findById(claims.id())
+                        .filter(user -> "ACTIVE".equals(user.getStatus()));
+                if (account.isEmpty()) {
+                    SecurityContextHolder.clearContext();
+                } else {
+                    var user = account.get();
+                    UserPrincipal principal = new UserPrincipal(user.getId(), user.getUsername(), user.getRole());
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
         } catch (JwtException | IllegalArgumentException ex) {
             // 签名错误、格式错误、已过期：同样不抛出，交由后续授权规则处理

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.stream.Collectors;
 
@@ -112,6 +113,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ApiResponse<Void> handleNoHandler(NoHandlerFoundException ex) {
         return ApiResponse.fail(ErrorCode.NOT_FOUND, "接口不存在：" + ex.getRequestURL());
+    }
+
+    /** Spring 6.1+ 静态资源兜底产生的缺失路由，与无 Handler 使用同一业务码。 */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ApiResponse<Void> handleNoResource(NoResourceFoundException ex) {
+        return ApiResponse.fail(ErrorCode.NOT_FOUND, "接口不存在：" + ex.getResourcePath());
     }
 
     /** 方法不支持 */

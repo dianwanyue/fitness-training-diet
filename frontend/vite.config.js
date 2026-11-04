@@ -4,6 +4,9 @@ export default defineConfig({
   plugins: [vue()],
   build: { chunkSizeWarningLimit: 650 },
   server: {
-    proxy: { "/api": { target: "http://localhost:8080", changeOrigin: true } },
+    proxy: { "/api": { target: process.env.FTDMS_API_TARGET || "http://127.0.0.1:8080", changeOrigin: true } },
+  },
+  preview: {
+    proxy: { "/api": { target: process.env.FTDMS_API_TARGET || "http://127.0.0.1:8080", changeOrigin: true } },
   },
 });

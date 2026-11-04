@@ -101,6 +101,7 @@ public class WorkoutService {
     @Transactional
     public WorkoutDtos.WorkoutCreateResponse create(Long userId, WorkoutDtos.WorkoutCreateRequest request) {
         LocalDateTime performedAt = DateGuard.parseDateTime(request.performedAt(), "训练时间");
+        DateGuard.requireRecent(performedAt.toLocalDate(), "训练日期", clock);
         LocalDateTime now = LocalDateTime.now(clock);
         if (performedAt.isAfter(now.plusMinutes(FUTURE_TOLERANCE_MINUTES))) {
             throw BizException.param("训练时间不得晚于当前时间");

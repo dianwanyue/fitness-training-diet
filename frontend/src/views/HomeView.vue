@@ -1,16 +1,18 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useData } from "../lib/useData.js";
 import {
   today,
   totals,
   goalAt,
-  summarize,
   dateRange,
   isBusinessDate,
 } from "../lib/domain.js";
-const { data } = useData();
+const { data, mode, loadRange, getStats } = useData();
 const date = ref(today());
+const loading = ref(false), error = ref("");
+const week = ref({ weightAverage: null, weightDays: 0, dietDays: 0 });
+let requestVersion = 0;
 const safeDate = computed(() =>
   isBusinessDate(date.value) ? date.value : today(),
 );
@@ -27,9 +29,21 @@ const plans = computed(() =>
 const weight = computed(
   () => data.value.body.find((x) => x.date === safeDate.value)?.weight,
 );
-const week = computed(() =>
-  summarize(data.value, dateRange(safeDate.value, 7)[0], safeDate.value),
-);
+watch(safeDate, async (value) => {
+  const version = ++requestVersion;
+  loading.value = true;
+  error.value = "";
+  week.value = { weightAverage: null, weightDays: 0, dietDays: 0 };
+  try {
+    await loadRange(value, value);
+    const response = await getStats(dateRange(value, 7)[0], value);
+    if (version === requestVersion) week.value = response;
+  } catch (cause) {
+    if (version === requestVersion) error.value = cause.message || "当日数据加载失败，请重试。";
+  } finally {
+    if (version === requestVersion) loading.value = false;
+  }
+}, { immediate: true });
 const meals = ["早餐", "午餐", "晚餐", "加餐"];
 const fmt = (n) => Number(n).toFixed(0);
 </script>
@@ -44,6 +58,9 @@ const fmt = (n) => Number(n).toFixed(0);
       >查看日期<input v-model="date" type="date" required
     /></label>
   </div>
+  <p class="caption">{{ mode === "demo" ? "本地演示数据，不会发送到后端。" : "真实服务记录与统计。" }}</p>
+  <p v-if="loading" role="status">正在加载所选日期…</p>
+  <p v-if="error" class="error" role="alert">{{ error }}</p>
   <section class="hero card">
     <div>
       <span class="hero-tag">日常，比完美更重要</span>

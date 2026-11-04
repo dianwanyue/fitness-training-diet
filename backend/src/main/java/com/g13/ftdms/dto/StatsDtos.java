@@ -37,7 +37,9 @@ public final class StatsDtos {
     }
 
     /** 每日摄入点 */
-    public record IntakeDay(LocalDate date, BigDecimal kcal, boolean recorded) {
+    public record IntakeDay(LocalDate date,
+                            @JsonInclude(JsonInclude.Include.ALWAYS) BigDecimal kcal,
+                            boolean recorded) {
     }
 
     /** 摄入均值（只对有效记录日求平均） */

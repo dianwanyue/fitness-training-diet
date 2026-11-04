@@ -1,9 +1,12 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { useData } from "../lib/useData.js";
-import { today, dateRange, summarize, isBusinessDate } from "../lib/domain.js";
+import { today, dateRange, isBusinessDate } from "../lib/domain.js";
 import TrendChart from "../components/TrendChart.vue";
-const { data, busy, commit } = useData();
+const { data, busy, mode, loadRange, getStats, saveBody, deleteBody } = useData();
+const loading = ref(false);
+const summary = ref(null);
+let loadVersion = 0;
 const date = ref(today()),
   weight = ref(""),
   error = ref(""),
@@ -19,27 +22,22 @@ watch(
   },
   { immediate: true },
 );
-const summary = computed(() =>
-  summarize(data.value, dateRange(today(), 30)[0], today()),
-);
+
 const history = computed(() =>
-  [...data.value.body].sort((a, b) => b.date.localeCompare(a.date)),
+  [...data.value.body].filter((record) => record.date >= dateRange(today(), 366)[0] && record.date <= today()).sort((a, b) => b.date.localeCompare(a.date)),
 );
 async function save() {
+  if (busy.value || loading.value) return;
   error.value = "";
   message.value = "";
   const n = Number(weight.value);
-  if (!isBusinessDate(date.value) || !Number.isFinite(n) || n < 20 || n > 400) {
-    error.value = "请选择日期，体重范围为 20–400 kg";
+  if (!isBusinessDate(date.value) || !Number.isFinite(n) || n < 20 || n > 300) {
+    error.value = "请选择日期，体重范围为 20–300 kg";
     return;
   }
   try {
-    await commit((d) => {
-      const old = d.body.find((x) => x.date === date.value);
-      if (old) old.weight = n;
-      else
-        d.body.push({ id: crypto.randomUUID(), date: date.value, weight: n });
-    });
+    await saveBody({ date: date.value, weight: n });
+    await refreshSummary();
     message.value = "体重已保存，同一天仅保留一条记录";
   } catch (e) {
     error.value = e.message;
@@ -49,15 +47,29 @@ async function remove(id) {
   error.value = "";
   message.value = "";
   try {
-    await commit((d) => {
-      d.body = d.body.filter((x) => x.id !== id);
-    });
+    await deleteBody(id);
+    await refreshSummary();
     deleting.value = null;
     message.value = "体重记录已删除";
   } catch (e) {
     error.value = e.message;
   }
 }
+async function refreshSummary() {
+  summary.value = await getStats(dateRange(today(), 30)[0], today());
+}
+watch(date, async (value) => {
+  const version = ++loadVersion;
+  if (!isBusinessDate(value)) { loading.value = false; return; }
+  loading.value = true;
+  error.value = "";
+  try {
+    await loadRange(dateRange(today(), 366)[0], today());
+    if (value < dateRange(today(), 366)[0] || value > today()) await loadRange(value, value);
+    await refreshSummary();
+  } catch (cause) { if (version === loadVersion) error.value = cause.message || "体重记录加载失败，请重试。"; }
+  finally { if (version === loadVersion) loading.value = false; }
+}, { immediate: true });
 </script>
 <template>
   <div class="page-heading">
@@ -68,6 +80,8 @@ async function remove(id) {
     </div>
     <RouterLink to="/stats" class="button secondary">查看统计 ↗</RouterLink>
   </div>
+  <p class="caption">{{ mode === "demo" ? "本地演示记录与统计。" : "真实服务记录与统计。" }}缺失日期不补零。</p>
+  <p v-if="loading" role="status">正在加载体重记录…</p>
   <div class="grid-2">
     <section class="card">
       <h2>记录体重</h2>
@@ -82,7 +96,7 @@ async function remove(id) {
             type="number"
             inputmode="decimal"
             min="20"
-            max="400"
+            max="300"
             step="0.1"
             required
             placeholder="如 68.5"
@@ -94,12 +108,12 @@ async function remove(id) {
               : "每个日期保存一条记录，支持补录。"
           }}
         </p>
-        <button class="button" :disabled="busy">
+        <button class="button" :disabled="busy || loading">
           {{ busy ? "保存中…" : existing ? "更新同日记录" : "保存体重" }}
         </button>
       </form>
     </section>
-    <section class="card">
+    <section v-if="summary" class="card">
       <div class="section-heading">
         <h2>最近 30 天</h2>
         <span class="badge">有效 {{ summary.weightDays }} 天</span>
@@ -120,7 +134,7 @@ async function remove(id) {
     </section>
   </div>
   <section class="card">
-    <h2>历史记录</h2>
+    <h2>近 366 天历史记录</h2>
     <div v-if="!history.length" class="empty">暂无记录</div>
     <div v-for="r in history" :key="r.id" class="list-row">
       <div>
@@ -128,7 +142,7 @@ async function remove(id) {
         <p>{{ r.weight }} kg</p>
       </div>
       <div v-if="deleting === r.id" class="row">
-        <button class="button danger" :disabled="busy" @click="remove(r.id)">
+        <button class="button danger" :disabled="busy || loading" @click="remove(r.id)">
           确认删除</button
         ><button class="button ghost" @click="deleting = null">取消</button>
       </div>
@@ -141,7 +155,7 @@ async function remove(id) {
           "
         >
           编辑</button
-        ><button class="button ghost" :disabled="busy" @click="deleting = r.id">
+        ><button class="button ghost" :disabled="busy || loading" @click="deleting = r.id">
           删除
         </button>
       </div>

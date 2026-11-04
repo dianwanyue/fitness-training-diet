@@ -1,13 +1,14 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { useData } from "../lib/useData.js";
-import { foods } from "../lib/repository.js";
 import { today, nutrition, totals, isBusinessDate } from "../lib/domain.js";
-const { data, busy, commit } = useData();
+const { data, busy, mode, foods, loadRange, saveDiet, deleteDiet } = useData();
+const loading = ref(false);
+let loadVersion = 0;
 const date = ref(today()),
   meal = ref("早餐"),
   query = ref(""),
-  foodId = ref(foods[0]?.id || ""),
+  foodId = ref(foods.value[0]?.id || ""),
   grams = ref(100);
 const message = ref(""),
   error = ref(""),
@@ -15,13 +16,13 @@ const message = ref(""),
   deleting = ref(null);
 const meals = ["早餐", "午餐", "晚餐", "加餐"];
 const matches = computed(() =>
-  foods.filter((x) => x.name.includes(query.value.trim())),
+  foods.value.filter((x) => x.name.includes(query.value.trim())),
 );
 watch(matches, (list) => {
   if (!editing.value && !list.some((x) => x.id === foodId.value))
     foodId.value = list[0]?.id || "";
 });
-const selected = computed(() => foods.find((x) => x.id === foodId.value));
+const selected = computed(() => foods.value.find((x) => x.id === foodId.value));
 const records = computed(() =>
   data.value.diet.filter((x) => x.date === date.value && x.meal === meal.value),
 );
@@ -57,43 +58,32 @@ function edit(record) {
   error.value = "";
 }
 async function save() {
+  if (busy.value || loading.value) return;
   error.value = "";
   message.value = "";
   if (
     !isBusinessDate(date.value) ||
     !Number.isFinite(Number(grams.value)) ||
-    Number(grams.value) <= 0 ||
-    Number(grams.value) > 10000 ||
+    Number(grams.value) < 1 ||
+    Number(grams.value) > 2000 ||
     (!editing.value && !selected.value)
   ) {
-    error.value = "请选择食物，克重须大于 0 且不超过 10000 g";
+    error.value = "请选择食物，克重须为 1–2000 g";
     return;
   }
   try {
     const old = editing.value;
-    const record = old
-      ? { ...old, grams: Number(grams.value), snapshot: { ...preview.value } }
-      : {
-          id: crypto.randomUUID(),
-          date: date.value,
-          meal: meal.value,
-          foodId: selected.value.id,
-          foodName: selected.value.name,
-          grams: Number(grams.value),
-          snapshot: { ...preview.value },
-          source: selected.value.source,
-          state: selected.value.state,
-        };
-    await commit((d) => {
-      if (old) {
-        const index = d.diet.findIndex((x) => x.id === old.id);
-        if (index < 0) throw new Error("记录已不存在");
-        d.diet[index] = record;
-      } else d.diet.push(record);
+    await saveDiet({
+      id: old?.id,
+      date: old?.date || date.value,
+      meal: old?.meal || meal.value,
+      foodId: old?.foodId || selected.value.id,
+      grams: Number(grams.value),
     });
     reset();
     message.value = "饮食记录已保存，汇总已更新";
   } catch (e) {
+    if (e?.partial) reset(); // The server confirmed the write; do not resubmit a create draft.
     error.value = e.message;
   }
 }
@@ -101,9 +91,7 @@ async function remove(id) {
   error.value = "";
   message.value = "";
   try {
-    await commit((d) => {
-      d.diet = d.diet.filter((x) => x.id !== id);
-    });
+    await deleteDiet(id);
     if (editing.value?.id === id) reset();
     deleting.value = null;
     message.value = "记录已删除";
@@ -111,6 +99,16 @@ async function remove(id) {
     error.value = e.message;
   }
 }
+watch(date, async (value) => {
+  const version = ++loadVersion;
+  if (!isBusinessDate(value)) { loading.value = false; return; }
+  loading.value = true;
+  error.value = "";
+  deleting.value = null;
+  try { await loadRange(value, value); }
+  catch (cause) { if (version === loadVersion) error.value = cause.message || "饮食记录加载失败，请重试。"; }
+  finally { if (version === loadVersion) loading.value = false; }
+}, { immediate: true });
 </script>
 <template>
   <div class="page-heading">
@@ -155,6 +153,8 @@ async function remove(id) {
       {{ m }}
     </button>
   </div>
+  <p class="caption">{{ mode === "demo" ? "本地演示食物与记录，不会发送到后端。" : "真实服务记录；营养快照由服务端计算。" }}</p>
+  <p v-if="loading" role="status">正在加载当日饮食…</p>
   <p v-if="error" class="error" role="alert">{{ error }}</p>
   <p v-if="message" class="success" role="status">{{ message }}</p>
   <div class="grid-2">
@@ -163,7 +163,7 @@ async function remove(id) {
       <form class="stack" @submit.prevent="save">
         <template v-if="!editing"
           ><label class="field"
-            >搜索演示食物<input
+            >{{ mode === "demo" ? "搜索演示食物" : "搜索食物" }}<input
               v-model="query"
               type="search"
               placeholder="如：米饭、鸡胸肉" /></label
@@ -196,8 +196,8 @@ async function remove(id) {
           >实际摄入（g）<input
             v-model.number="grams"
             type="number"
-            min="0.1"
-            max="10000"
+            min="1"
+            max="2000"
             step="0.1"
             required
             inputmode="decimal"
@@ -211,7 +211,7 @@ async function remove(id) {
           </p>
         </div>
         <div class="actions">
-          <button class="button" :disabled="busy">
+          <button class="button" :disabled="busy || loading">
             {{
               busy ? "保存中…" : editing ? "保存修改" : "添加到" + meal
             }}</button
@@ -248,16 +248,16 @@ async function remove(id) {
         </div>
         <div v-if="deleting === r.id" class="actions">
           <span class="caption">确定删除这一项？</span
-          ><button class="button danger" :disabled="busy" @click="remove(r.id)">
+          ><button class="button danger" :disabled="busy || loading" @click="remove(r.id)">
             确认删除</button
           ><button class="button ghost" @click="deleting = null">保留</button>
         </div>
         <div v-else class="actions">
-          <button class="button ghost" :disabled="busy" @click="edit(r)">
+          <button class="button ghost" :disabled="busy || loading" @click="edit(r)">
             修改克重</button
           ><button
             class="button ghost"
-            :disabled="busy"
+            :disabled="busy || loading"
             @click="deleting = r.id"
           >
             删除

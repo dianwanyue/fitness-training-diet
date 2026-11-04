@@ -1,10 +1,11 @@
 <script setup>
 import { computed, nextTick, ref, watch } from "vue";
 import { useData } from "../lib/useData.js";
-import { today } from "../lib/domain.js";
-import { exercises } from "../lib/repository.js";
+import { today, dateRange } from "../lib/domain.js";
 
-const { data, user, busy, error, commit } = useData();
+const { data, user, busy, error, mode, exercises, loadRange, savePlan: persistPlan, setPlanStatus, saveWorkout: persistWorkout } = useData();
+const loading = ref(false);
+let loadVersion = 0;
 const selectedDate = ref(today());
 const localError = ref("");
 const success = ref("");
@@ -22,7 +23,7 @@ const historyScope = ref("day");
 const saving = ref(false);
 const planForm = ref(null);
 const recordForm = ref(null);
-const locked = computed(() => busy.value || saving.value);
+const locked = computed(() => busy.value || saving.value || loading.value);
 const plans = computed(() => data.value?.plans ?? []);
 const workouts = computed(() => data.value?.workouts ?? []);
 const dayPlans = computed(() =>
@@ -41,7 +42,9 @@ const history = computed(() =>
   workouts.value
     .filter(
       (workout) =>
-        historyScope.value === "all" || workout.date === selectedDate.value,
+        historyScope.value === "all"
+          ? workout.date >= dateRange(selectedDate.value, 366)[0] && workout.date <= selectedDate.value
+          : workout.date === selectedDate.value,
     )
     .slice()
     .sort((a, b) => b.date.localeCompare(a.date)),
@@ -65,19 +68,19 @@ const statusLabels = {
 const key = () => crypto.randomUUID();
 const newPlanItem = () => ({
   key: key(),
-  exerciseId: exercises[0]?.id ?? "",
+  exerciseId: exercises.value[0]?.id ?? "",
   sets: 3,
   reps: 10,
   weight: 0,
 });
 const newSet = () => ({ key: key(), weight: "", reps: "" });
-const newRecordItem = (exerciseId = exercises[0]?.id ?? "") => ({
+const newRecordItem = (exerciseId = exercises.value[0]?.id ?? "") => ({
   key: key(),
   exerciseId,
   sets: [newSet()],
 });
-const exerciseName = (id) =>
-  exercises.find((exercise) => exercise.id === id)?.name || "未知动作";
+const exerciseName = (id, snapshotName) =>
+  snapshotName || exercises.value.find((exercise) => exercise.id === id)?.name || "已停用或未知动作";
 const exerciseLabel = (exercise) => `${exercise.name} · ${exercise.muscle}`;
 const planForWorkout = (workout) =>
   plans.value.find((plan) => plan.id === workout.planId);
@@ -97,6 +100,9 @@ function validDate(value) {
 
 function requireDate() {
   if (!validDate(selectedDate.value)) throw new Error("请选择有效的训练日期。");
+  const max = new Date(Date.parse(`${today()}T00:00:00Z`) + 7 * 86400000).toISOString().slice(0, 10);
+  if (mode.value === "remote" && (selectedDate.value < dateRange(today(), 366)[0] || selectedDate.value > max))
+    throw new Error("真实记录仅支持近一年至未来 7 天的日期；实际训练不能晚于今天。");
   return selectedDate.value;
 }
 
@@ -124,20 +130,32 @@ function numberValue(value, label, integer = false) {
 }
 
 function requireExercise(exerciseId) {
-  if (!exercises.some((exercise) => exercise.id === exerciseId))
+  if (!exercises.value.some((exercise) => exercise.id === exerciseId))
     throw new Error("请选择有效的训练动作。");
   return exerciseId;
 }
 
-async function saveChange(mutator, message, onSuccess = () => {}) {
+async function saveChange(work, message, onSuccess = () => {}) {
   if (locked.value || !user.value) return;
   resetMessages();
   saving.value = true;
   try {
-    await commit(mutator);
+    await work();
     onSuccess();
     success.value = message;
   } catch (cause) {
+    if (cause?.recordSaved) {
+      recordEditorOpen.value = false;
+      recordItems.value = [];
+      completeWithRecord.value = false;
+      localError.value = `${cause.message || "实际训练记录已保存，但完成计划失败。"} 请勿重复提交记录；如计划仍待完成，仅重试“仅标记完成”。`;
+      return;
+    }
+    if (cause?.partial) {
+      onSuccess();
+      localError.value = cause.message || "已保存但重新读取失败，请重新加载确认，不要重复提交。";
+      return;
+    }
     localError.value = cause?.message
       ? String(cause.message)
       : "保存失败，请重试；填写内容已保留。";
@@ -178,31 +196,23 @@ async function savePlan() {
     title = planTitle.value.trim();
     if (!title || title.length > 80)
       throw new Error("计划名称须为 1–80 个字符。");
-    if (!planItems.value.length) throw new Error("计划至少需要一个动作。");
-    items = planItems.value.map((item, index) => ({
-      exerciseId: requireExercise(item.exerciseId),
-      sets: numberValue(item.sets, `动作 ${index + 1} 的目标组数`, true),
-      reps: numberValue(item.reps, `动作 ${index + 1} 的每组次数`, true),
-      weight: numberValue(item.weight, `动作 ${index + 1} 的目标重量`),
-    }));
+    if (!planItems.value.length || planItems.value.length > 20)
+      throw new Error("计划动作数量须为 1–20 个。");
+    items = planItems.value.map((item, index) => {
+      const sets = numberValue(item.sets, `动作 ${index + 1} 的目标组数`, true);
+      const reps = numberValue(item.reps, `动作 ${index + 1} 的每组次数`, true);
+      const weight = numberValue(item.weight, `动作 ${index + 1} 的目标重量`);
+      if (sets > 20 || reps > 100 || weight > 500 || Math.abs(weight * 100 - Math.round(weight * 100)) > 1e-7)
+        throw new Error(`动作 ${index + 1}：组数 1–20、次数 1–100、重量 0–500 kg（最多两位小数）。`);
+      return { exerciseId: requireExercise(item.exerciseId), sets, reps, weight };
+    });
   } catch (cause) {
     localError.value = cause.message;
     return;
   }
   const id = editingPlanId.value;
   await saveChange(
-    (draft) => {
-      if (id) {
-        const plan = draft.plans.find((entry) => entry.id === id);
-        if (!plan || plan.status !== "pending" || plan.date !== date)
-          throw new Error("计划已变更，请关闭编辑后重试。");
-        plan.title = title;
-        plan.items = items;
-        // Editing a target never rewrites the actual workout history.
-      } else {
-        draft.plans.push({ id: key(), date, title, status: "pending", items });
-      }
-    },
+    () => persistPlan({ id, date, title, items, note: plans.value.find((plan) => plan.id === id)?.note }),
     id ? "计划已更新，历史训练记录保持不变。" : "训练计划已创建。",
     () => {
       planEditorOpen.value = false;
@@ -212,12 +222,7 @@ async function savePlan() {
 
 async function cancelPlan(id) {
   await saveChange(
-    (draft) => {
-      const plan = draft.plans.find((entry) => entry.id === id);
-      if (!plan || plan.status !== "pending")
-        throw new Error("计划已不是待完成状态，不能重复取消。");
-      plan.status = "cancelled";
-    },
+    () => setPlanStatus(id, "cancelled"),
     "计划已取消，已有训练记录不会删除。",
     () => {
       cancelId.value = null;
@@ -232,12 +237,7 @@ async function cancelPlan(id) {
 
 async function markComplete(id) {
   await saveChange(
-    (draft) => {
-      const plan = draft.plans.find((entry) => entry.id === id);
-      if (!plan || plan.status !== "pending")
-        throw new Error("仅待完成计划可以打卡，不能重复完成。");
-      plan.status = "completed";
-    },
+    () => setPlanStatus(id, "completed"),
     "计划已标记完成；没有生成实际训练记录。",
     () => {
       completeId.value = null;
@@ -278,8 +278,11 @@ async function saveWorkout() {
   let date, items;
   try {
     date = requireDate();
-    if (!recordItems.value.length)
-      throw new Error("实际训练至少需要一个动作。");
+    if (selectedDate.value > today()) throw new Error("实际训练不能记录到未来日期。");
+    if (!recordItems.value.length || recordItems.value.reduce((count, item) => count + item.sets.length, 0) > 50)
+      throw new Error("实际训练至少一个动作，总组数不超过 50 组。");
+    if (recordItems.value.some((item) => item.sets.length > 20 || item.sets.some((set) => Number(set.reps) > 100 || Number(set.weight) > 500 || Math.abs(Number(set.weight) * 100 - Math.round(Number(set.weight) * 100)) > 1e-7)))
+      throw new Error("每动作最多 20 组，每组 1–100 次，重量 0–500 kg（最多两位小数）。");
     items = recordItems.value.map((item, itemIndex) => {
       if (!item.sets.length)
         throw new Error(`动作 ${itemIndex + 1} 至少需要一组实际记录。`);
@@ -305,23 +308,7 @@ async function saveWorkout() {
   const planId = recordPlanId.value || null;
   const finish = completeWithRecord.value;
   await saveChange(
-    (draft) => {
-      const plan = planId
-        ? draft.plans.find((entry) => entry.id === planId)
-        : null;
-      if (
-        planId &&
-        (!plan || plan.date !== date || plan.status === "cancelled")
-      ) {
-        throw new Error("关联计划已取消或不属于当前日期，请重新选择。");
-      }
-      if (finish && (!plan || plan.status !== "pending"))
-        throw new Error(
-          "关联计划已完成或不可用，请取消“同时完成计划”后再保存。",
-        );
-      draft.workouts.push({ id: key(), date, planId, items });
-      if (finish) plan.status = "completed";
-    },
+    () => persistWorkout({ date, planId, items, completePlan: finish }),
     finish
       ? "实际记录已保存，关联计划已完成。"
       : "实际记录已保存；没有更改计划状态。",
@@ -353,6 +340,20 @@ watch(
 watch(canCompleteWithRecord, (possible) => {
   if (!possible) completeWithRecord.value = false;
 });
+watch([selectedDate, historyScope], async () => {
+  const version = ++loadVersion;
+  if (!validDate(selectedDate.value)) { loading.value = false; return; }
+  loading.value = true;
+  localError.value = "";
+  try {
+    const end = selectedDate.value;
+    await loadRange(historyScope.value === "all" ? dateRange(end, 366)[0] : end, end);
+  } catch (cause) {
+    if (version === loadVersion) localError.value = cause.message || "训练记录加载失败，请重试。";
+  } finally {
+    if (version === loadVersion) loading.value = false;
+  }
+}, { immediate: true });
 </script>
 
 <template>
@@ -368,7 +369,9 @@ watch(canCompleteWithRecord, (possible) => {
 
     <p v-if="visibleError" class="error" role="alert">{{ visibleError }}</p>
     <p v-if="success" class="success" role="status">{{ success }}</p>
-    <p v-if="!user" class="empty">请先登录演示账户，再记录你的训练日记。</p>
+    <p class="caption">{{ mode === "demo" ? "本地演示数据，不会发送到后端。" : "真实服务数据；保存后重新查询。" }}</p>
+    <p v-if="loading" role="status" class="muted">正在加载训练记录…</p>
+    <p v-if="!user" class="empty">请先登录账户，再记录你的训练日记。</p>
 
     <template v-else>
       <section class="card date-card" aria-label="训练日期">
@@ -438,7 +441,7 @@ watch(canCompleteWithRecord, (possible) => {
               :key="`${plan.id}-${index}`"
               class="list-row target-row"
             >
-              <span>{{ exerciseName(item.exerciseId) }}</span>
+              <span>{{ exerciseName(item.exerciseId, item.exerciseName) }}</span>
               <span class="number"
                 >{{ item.sets }} 组 × {{ item.reps }} 次 ·
                 {{ item.weight }} kg</span
@@ -737,7 +740,7 @@ watch(canCompleteWithRecord, (possible) => {
                 linkedPlan.items
                   .map(
                     (item) =>
-                      `${exerciseName(item.exerciseId)} ${item.sets}组 × ${item.reps}次 / ${item.weight}kg`,
+                      `${exerciseName(item.exerciseId, item.exerciseName)} ${item.sets}组 × ${item.reps}次 / ${item.weight}kg`,
                   )
                   .join("；")
               }}。请按实际表现填写，不必与目标一致。
@@ -931,7 +934,7 @@ watch(canCompleteWithRecord, (possible) => {
             :key="`${workout.id}-${itemIndex}`"
             class="history-exercise"
           >
-            <h4>{{ exerciseName(item.exerciseId) }}</h4>
+            <h4>{{ exerciseName(item.exerciseId, item.exerciseName) }}</h4>
             <ul class="actual-history">
               <li
                 v-for="(set, setIndex) in item.sets"

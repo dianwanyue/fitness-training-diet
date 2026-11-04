@@ -171,15 +171,17 @@ test("useData commits only after save and always resets busy on rejected mutatio
     value: storage,
     configurable: true,
   });
-  const { useData } = await import("../src/lib/useData.js");
-  const state = useData();
+  const { createDataStore } = await import("../src/lib/useData.js");
+  const modeStorage = new MemoryStorage();
+  modeStorage.setItem("ftdms.connection.v1.mode", "demo");
+  const state = createDataStore({ localRepository: createRepository(storage), modeStorage });
   try {
     assert.equal(state.ready.value, false);
     await state.refresh();
     assert.equal(state.ready.value, true);
     assert.equal(state.user.value, null);
     await state.register("state-user", "state-demo-pass");
-    assert.equal(useData().data, state.data);
+    assert.equal(state.user.value.username, "state-user");
     await state.commit((draft) => {
       draft.profile.nickname = "saved";
     });
@@ -218,7 +220,7 @@ test("useData commits only after save and always resets busy on rejected mutatio
       state.commit(() => {}),
       /正在保存/,
     );
-    state.logout();
+    await state.logout();
     release();
     await assert.rejects(pending, /账户已切换/);
     assert.equal(state.user.value, null);
@@ -227,7 +229,7 @@ test("useData commits only after save and always resets busy on rejected mutatio
     await state.login("state-user", "state-demo-pass");
     assert.equal(state.data.value.profile.nickname, "saved");
   } finally {
-    state.logout();
+    await state.logout();
     if (previous) Object.defineProperty(globalThis, "localStorage", previous);
     else delete globalThis.localStorage;
   }

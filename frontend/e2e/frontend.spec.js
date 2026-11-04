@@ -75,6 +75,7 @@ test("new account completes diet, body, training and goal flow with persistence 
   page.on("pageerror", (e) => errors.push(e.message));
   await page.setViewportSize({ width: 375, height: 844 });
   await page.goto("/");
+  await page.getByRole("button", { name: "本地演示模式", exact: true }).click();
   await page.getByRole("button", { name: "还没有账户？注册" }).click();
   await page.getByLabel("用户名", { exact: true }).fill("testuser");
   await page.getByLabel("演示密码", { exact: true }).fill("test12345");

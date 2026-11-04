@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -98,9 +99,9 @@ public class DietService {
     /**
      * 修改饮食记录（只允许改餐次与克重）。
      *
-     * <p>改克重时按"当前食物库的每 100 g 值"重算快照：这是刻意的选择——
-     * 用户修改的是"当时吃了多少"，服务端用最新营养数据重新估算更符合直觉；
-     * 若食物已被物理删除，则返回 1004 提示无法重算。</p>
+     * <p>改克重时按原记录的实际摄入快照比例换算，保留当时的数据来源。
+     * 不读取当前食物库：即使食物已停用或营养值发生修改，也不能改写历史估算口径。
+     * 原记录只保留两位小数，比例换算结果同样保留两位小数。</p>
      *
      * @param userId  当前用户
      * @param id      记录编号
@@ -116,11 +117,13 @@ public class DietService {
         if (request.meal() != null) {
             record.setMeal(request.meal());
         }
-        if (request.grams() != null) {
+        if (request.grams() != null && request.grams().compareTo(record.getGrams()) != 0) {
+            BigDecimal originalGrams = record.getGrams();
+            record.setSnapshotKcal(rescaleSnapshot(record.getSnapshotKcal(), originalGrams, request.grams()));
+            record.setSnapshotProteinG(rescaleSnapshot(record.getSnapshotProteinG(), originalGrams, request.grams()));
+            record.setSnapshotCarbG(rescaleSnapshot(record.getSnapshotCarbG(), originalGrams, request.grams()));
+            record.setSnapshotFatG(rescaleSnapshot(record.getSnapshotFatG(), originalGrams, request.grams()));
             record.setGrams(request.grams());
-            // 克重变化必须以原食物的营养值为基准重算快照
-            Food food = foodService.loadForRecalculate(record.getFoodId());
-            applySnapshot(record, food);
         }
 
         DietRecord saved = dietRepository.save(record);
@@ -193,6 +196,14 @@ public class DietService {
         record.setSnapshotCarbG(NutritionCalculator.amount(food.getCarbPer100g(), record.getGrams()));
         record.setSnapshotFatG(NutritionCalculator.amount(food.getFatPer100g(), record.getGrams()));
         record.setSnapshotSource(food.getSource());
+    }
+
+    /** 以原摄入快照与原克重为基准，避免最新食物库污染历史。 */
+    private BigDecimal rescaleSnapshot(BigDecimal snapshot, BigDecimal originalGrams, BigDecimal grams) {
+        if (originalGrams == null || originalGrams.signum() <= 0) {
+            throw BizException.param("原饮食记录克重不合法，无法调整快照");
+        }
+        return nz(snapshot).multiply(grams).divide(originalGrams, 2, RoundingMode.HALF_UP);
     }
 
     /** 实体 → 列表项视图 */

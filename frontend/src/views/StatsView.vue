@@ -1,9 +1,11 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useData } from "../lib/useData.js";
-import { today, dateRange, summarize, isBusinessDate } from "../lib/domain.js";
+import { today, dateRange, isBusinessDate } from "../lib/domain.js";
 import TrendChart from "../components/TrendChart.vue";
-const { data } = useData();
+const { mode, getStats } = useData();
+const result = ref(null), loading = ref(false), error = ref("");
+let requestVersion = 0;
 const days = ref(7),
   start = ref(dateRange(today(), 7)[0]),
   end = ref(today());
@@ -21,13 +23,25 @@ const invalid = computed(
     start.value > end.value ||
     (Date.parse(end.value) - Date.parse(start.value)) / 86400000 > 365,
 );
-const result = computed(() =>
-  invalid.value ? null : summarize(data.value, start.value, end.value),
-);
-const seven = computed(() => {
-  const date = isBusinessDate(end.value) ? end.value : today();
-  return summarize(data.value, dateRange(date, 7)[0], date);
-});
+const seven = computed(() => ({
+  weightAverage: result.value?.sevenDayAverage ?? null,
+  weightDays: result.value?.sevenDayDays ?? result.value?.sevenDayValidDays ?? 0,
+}));
+watch([start, end], async () => {
+  const version = ++requestVersion;
+  result.value = null;
+  error.value = "";
+  if (invalid.value) { loading.value = false; return; }
+  loading.value = true;
+  try {
+    const response = await getStats(start.value, end.value);
+    if (version === requestVersion) result.value = response;
+  } catch (cause) {
+    if (version === requestVersion) error.value = cause.message || "统计加载失败，请重试。";
+  } finally {
+    if (version === requestVersion) loading.value = false;
+  }
+}, { immediate: true });
 </script>
 <template>
   <div class="page-heading">
@@ -57,6 +71,8 @@ const seven = computed(() => {
   <p v-if="invalid" class="error" role="alert">
     请选择有效日期，开始日期不得晚于结束日期，区间最多 366 天。
   </p>
+  <p v-if="loading" role="status">正在加载区间统计…</p>
+  <p v-if="error" class="error" role="alert">{{ error }}</p>
   <template v-if="result"
     ><div class="grid-3">
       <article class="card">
@@ -135,7 +151,7 @@ const seven = computed(() => {
         未取消计划。无计划不计算完成率；临时训练单独计数。营养为录入时的快照估算，均值只使用有效记录日。
       </p>
       <span class="badge"
-        >本页是本地演示统计，后端联调时以服务端统一口径为准。</span
+        >{{ mode === "demo" ? "本地演示统计，不代表真实服务数据。" : "服务端统计；体重区间均值按服务端返回的有效记录点计算。" }}</span
       >
     </section></template
   >

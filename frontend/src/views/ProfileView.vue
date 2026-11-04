@@ -3,7 +3,7 @@ import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useData } from "../lib/useData.js";
 import { today, isBusinessDate } from "../lib/domain.js";
-const { data, user, busy, commit, logout } = useData(),
+const { data, user, busy, mode, saveProfile: persistProfile, saveGoal: persistGoal, logout } = useData(),
   router = useRouter();
 const profile = reactive({ ...data.value.profile }),
   goal = reactive({
@@ -21,18 +21,17 @@ async function saveProfile() {
   if (
     !profile.nickname?.trim() ||
     !Number.isFinite(Number(profile.height)) ||
-    profile.height < 80 ||
+    profile.height < 100 ||
     profile.height > 250 ||
     (profile.birthday &&
       (!isBusinessDate(profile.birthday) || profile.birthday > today()))
   ) {
-    error.value = "请填写昵称、80–250 cm 身高及有效出生日期";
+    error.value = "请填写昵称、100–250 cm 身高及有效出生日期";
     return;
   }
   try {
-    await commit((d) => {
-      d.profile = { ...profile, nickname: profile.nickname.trim() };
-    });
+    await persistProfile({ ...profile, nickname: profile.nickname.trim() });
+    Object.assign(profile, data.value.profile);
     message.value = "个人资料已保存";
   } catch (e) {
     error.value = e.message;
@@ -44,22 +43,18 @@ async function saveGoal() {
   if (
     !isBusinessDate(goal.effectiveDate) ||
     ["kcal", "protein", "carbs", "fat"].some(
-      (k) => !Number.isFinite(Number(goal[k])) || Number(goal[k]) <= 0,
+      (k) => !Number.isFinite(Number(goal[k])) || Number(goal[k]) < 0,
     ) ||
-    goal.kcal > 10000 ||
+    goal.kcal < 500 || goal.kcal > 6000 ||
     goal.protein > 1000 ||
-    goal.carbs > 2000 ||
+    goal.carbs > 1000 ||
     goal.fat > 1000
   ) {
-    error.value = "请填写有效生效日期和正数目标，数值超出可用范围";
+    error.value = "请填写有效生效日期；能量 500–6000 kcal，营养素 0–1000 g";
     return;
   }
   try {
-    await commit((d) => {
-      const old = d.goals.find((x) => x.effectiveDate === goal.effectiveDate);
-      if (old) Object.assign(old, goal);
-      else d.goals.push({ ...goal, id: crypto.randomUUID() });
-    });
+    await persistGoal({ ...goal });
     message.value = "目标已保存；其他生效日期的历史保持不变";
   } catch (e) {
     error.value = e.message;
@@ -67,7 +62,7 @@ async function saveGoal() {
 }
 async function exit() {
   try {
-    logout();
+    await logout();
     await router.replace("/");
   } catch (e) {
     error.value = e.message;
@@ -80,7 +75,7 @@ async function exit() {
       <p class="eyebrow">YOUR OWN PACE</p>
       <h1>为自己，设定一个方向。</h1>
       <p class="muted">
-        {{ user.username }} · 当前账户的数据仅保存在本机浏览器。
+        {{ user.username }} · {{ mode === "demo" ? "本地演示账户，数据仅保存在本机浏览器。" : "真实服务账户，记录由后端保存。" }}
       </p>
     </div>
     <button class="button secondary" :disabled="busy" @click="exit">
@@ -103,7 +98,7 @@ async function exit() {
           >身高（cm）<input
             v-model.number="profile.height"
             type="number"
-            min="80"
+            min="100"
             max="250"
             step="0.1"
             required /></label
@@ -126,15 +121,15 @@ async function exit() {
             >能量（kcal）<input
               v-model.number="goal.kcal"
               type="number"
-              min="1"
-              max="10000"
+              min="500"
+              max="6000"
               step="1"
               required /></label
           ><label class="field"
             >蛋白质（g）<input
               v-model.number="goal.protein"
               type="number"
-              min="0.1"
+              min="0"
               max="1000"
               step="0.1"
               required /></label
@@ -142,15 +137,15 @@ async function exit() {
             >碳水化合物（g）<input
               v-model.number="goal.carbs"
               type="number"
-              min="0.1"
-              max="2000"
+              min="0"
+              max="1000"
               step="0.1"
               required /></label
           ><label class="field"
             >脂肪（g）<input
               v-model.number="goal.fat"
               type="number"
-              min="0.1"
+              min="0"
               max="1000"
               step="0.1"
               required
@@ -164,7 +159,7 @@ async function exit() {
     </section>
   </div>
   <section class="card">
-    <h2>目标历史</h2>
+    <h2>{{ mode === "demo" ? "目标历史" : "近一年及未来 7 天目标历史" }}</h2>
     <div v-if="!data.goals.length" class="empty">暂无目标</div>
     <div
       v-for="g in [...data.goals].sort((a, b) =>
@@ -186,11 +181,11 @@ async function exit() {
   <section class="card">
     <h2>隐私与版本说明</h2>
     <p class="muted">
-      这是前端模拟版本，不是真实身份认证或安全存储。请勿输入真实口令或敏感健康数据；清除浏览器站点数据会删除本机演示账户及记录。退出登录不删除数据。
+      {{ mode === "demo" ? "这是本地模拟，不是真实身份认证或安全存储。请勿输入真实口令或敏感健康数据；清除站点数据会删除本机演示账户及记录。" : "当前使用真实后端接口。页面不使用本地演示记录兜底；退出会清除本机会话，但不会删除服务端记录。请在可信设备和 HTTPS 环境使用。" }}
     </p>
     <p class="caption">
       当前未实现 AI 分析、后台管理与 Android
-      打包；没有向模型发送数据，也没有收集 AI 授权。待后端接口确认后再联调。
+      打包；没有向模型发送数据，也没有收集 AI 授权。
     </p>
   </section>
 </template>

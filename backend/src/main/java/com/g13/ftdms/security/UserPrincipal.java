@@ -56,7 +56,7 @@ public record UserPrincipal(Long id, String username, String role) implements Us
 
     @Override
     public boolean isEnabled() {
-        // 账户停用由登录接口拦截；已签发的令牌在有效期内仍可用，属已知取舍（见说明文档 5.3）
+        // 过滤器已检查数据库中的当前账户状态，只有 ACTIVE 账户才会创建认证主体。
         return true;
     }
 }

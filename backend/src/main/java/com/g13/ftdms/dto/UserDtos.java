@@ -43,13 +43,13 @@ public final class UserDtos {
      * 用户名、角色、状态不在可改范围内（由 Service 忽略）。</p>
      */
     public record UpdateProfileRequest(
-            @Pattern(regexp = ValidationPatterns.NICKNAME, message = "昵称需为 1–50 字，首尾不得为空白")
+            @Pattern(regexp = "^$|" + ValidationPatterns.NICKNAME, message = "昵称需为 1–50 字，首尾不得为空白（空字符串可清除）")
             String nickname,
 
             @Pattern(regexp = ValidationPatterns.GENDER, message = "性别取值需为 MALE / FEMALE / UNKNOWN")
             String gender,
 
-            @Pattern(regexp = ValidationPatterns.DATE, message = "出生日期格式需为 yyyy-MM-dd")
+            @Pattern(regexp = "^$|" + ValidationPatterns.DATE, message = "出生日期格式需为 yyyy-MM-dd（空字符串可清除）")
             String birthDate,
 
             @DecimalMin(value = "100", message = "身高(cm) 需在 100–250 之间")
