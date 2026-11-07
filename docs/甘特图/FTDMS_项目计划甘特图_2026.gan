@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="健身训练与饮食管理系统（FTDMS）项目计划" company="软件工程课程 G13 小组" webLink="" view-date="2026-09-21" view-index="0" gantt-divider-location="700" resource-divider-location="330" version="3.3.3309" locale="zh_CN">
+    <description><![CDATA[依据《软件开发计划 SDP》V1.6 第 7.1 条 WBS、7.2 条进度表与 7.4 条里程碑编制。
+8 个阶段、41 个工作包、7 个里程碑；资源为方文锦（需求与后端）、陈智杰（前端与原型）。
+日历按自然日计（项目周期 2026-09-28 ～ 2026-12-30，94 天 / 14 周）。]]></description>
+    <view zooming-state="default:1" id="gantt-chart">
+        <field id="tpd3" name="Name" width="300" order="0"/>
+        <field id="tpd4" name="Begin date" width="90" order="1"/>
+        <field id="tpd6" name="Duration" width="58" order="2"/>
+        <field id="tpd8" name="Coordinator" width="110" order="3"/>
+        <option id="taskLabelRight" value="name"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+        <timeline><![CDATA[49]]></timeline>
+        <option id="color.recent"><![CDATA[#ff0066]]></option>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="180" order="0"/>
+        <field id="1" name="Default role" width="180" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="0" mon="0" tue="0" wed="0" thu="0" fri="0" sat="0"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+            <taskproperty id="tpc0" name="Is done" type="custom" valuetype="boolean" defaultvalue="false">
+                <simple-select select="completion=100"/>
+            </taskproperty>
+        </taskproperties>
+        <task id="101" uid="657311e58f424e848df39f045b707e79" name="1 可行性分析" color="#14563F" meeting="false" start="2026-09-28" duration="14" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[阶段 1：2026-09-28 ～ 2026-10-11]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        <task id="102" uid="a2423b12e2ff481d828861d6c227e246" name="1.1 分析准备与候选方案论证" color="#2F7D5C" meeting="false" start="2026-09-28" duration="3" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 1.1　责任人：方文锦
+交付：评价准则与加权评分表、候选方案对比表（3 方案）、加权评分明细（附录 A）]]></notes>
+            <depend id="103" type="2" difference="0" hardness="Strong"/>
+            <depend id="104" type="2" difference="0" hardness="Strong"/>
+            <depend id="105" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="103" uid="8b6335e912b24d96b9600ee4106ff594" name="1.2 技术可行性分析" color="#2F7D5C" meeting="false" start="2026-10-01" duration="3" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 1.2　责任人：方文锦
+交付：技术项评价表（10 项 5 分制）、技术难点清单、Spike 检查单 S1–S5]]></notes>
+            <depend id="106" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="104" uid="638a9b0282044bc2aca6e418d63c0401" name="1.3 经济可行性分析" color="#2F7D5C" meeting="false" start="2026-10-01" duration="2" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 1.3　责任人：方文锦
+交付：成本估算表（280 人时、约 8,467 元）、效益与投入产出分析]]></notes>
+            <depend id="106" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="105" uid="32bd7bee74664c92808d1584f06f7284" name="1.4 实施可行性分析" color="#C08A3E" meeting="false" start="2026-10-02" duration="2" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 1.4　责任人：陈智杰
+交付：合规核对表（Apache-2.0/个保法/生成式 AI 办法）、用户使用可行性说明]]></notes>
+            <depend id="106" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="106" uid="bbff5dd06f514fc0b5c34d8c4b97f0f1" name="1.5 风险识别与评价" color="#2F7D5C" meeting="false" start="2026-10-04" duration="2" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 1.5　责任人：方文锦
+交付：风险登记册 R1–R10（概率×影响分级）、风险对策与验证时点]]></notes>
+            <depend id="107" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="107" uid="bae68970eddd475ebb2c2a9e8cbdc20a" name="1.6 FAR 编制与评审" color="#4F7C8C" meeting="false" start="2026-10-06" duration="6" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 1.6　责任人：方文锦、陈智杰
+交付：FAR 初稿、附录 C–E 系统图与数据字典、评审结论「有条件可行」]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="108" uid="9970c51044774bad96009866e7c73057" name="M1 需求与技术方案冻结" color="#14563F" meeting="false" start="2026-10-11" duration="0" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[里程碑：M1 需求与技术方案冻结（计划 2026-10-11）]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        </task>
+        <task id="109" uid="113461c516ae42cd9e8c9832bc9fa009" name="2 需求分析" color="#14563F" meeting="false" start="2026-09-28" duration="35" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[阶段 2：2026-09-28 ～ 2026-11-01]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        <task id="110" uid="01c9d3ffbd774c56ab691c2f6f76af5e" name="2.1 需求调研" color="#4F7C8C" meeting="false" start="2026-09-28" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 2.1　责任人：方文锦、陈智杰
+交付：用户场景与痛点清单、用户类别与代表（U1 陈羿冲 / U2 方文锦）、目标与边界]]></notes>
+            <depend id="111" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="111" uid="ad546f1b316143a3b566b83a4101dc3b" name="2.2 需求收集" color="#2F7D5C" meeting="false" start="2026-10-02" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 2.2　责任人：方文锦
+交付：功能需求候选清单（8 模块）、非功能需求候选清单、约束与假设清单]]></notes>
+            <depend id="112" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="112" uid="2e6378f48f444e0db58ec65d0613d71b" name="2.3 需求整理" color="#4F7C8C" meeting="false" start="2026-10-06" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 2.3　责任人：方文锦、陈智杰
+交付：需求条目表 FR-01～FR-32 / NFR-01～NFR-12、优先级与验收依据表]]></notes>
+            <depend id="113" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="113" uid="ba26eaf3816e4d01a86f8e51cefa066e" name="2.4 需求分析" color="#4F7C8C" meeting="false" start="2026-10-10" duration="8" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 2.4　责任人：方文锦、陈智杰
+交付：业务规则表、数据字典（12 表 / 76 元素）、状态转化图与 E-R 图、需求追踪矩阵]]></notes>
+            <depend id="114" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="114" uid="33b922bc670c43d2ba5f3a48bbc3181d" name="2.5 需求文档编写（第一阶段）" color="#4F7C8C" meeting="false" start="2026-10-18" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 2.5　责任人：方文锦、陈智杰
+交付：第一阶段需求与技术方案说明书 v1.0、11 页线框原型 prototype.html]]></notes>
+            <depend id="115" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="115" uid="17fc264b65444045acab0678df54165e" name="2.6 SRS 国标版编写" color="#4F7C8C" meeting="false" start="2026-10-22" duration="7" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 2.6　责任人：方文锦、陈智杰
+交付：SRS V1.0（GB/T 8567 第 7.11 条）、结构图/用例图/E-R/状态图与附录]]></notes>
+            <depend id="116" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="116" uid="60d82a2f00e54d11bb9d60f66d767bd6" name="2.7 原型走查与需求评审确认" color="#4F7C8C" meeting="false" start="2026-10-29" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 2.7　责任人：方文锦、陈智杰
+交付：走查意见 5 条闭环（10-23）、需求阶段评审 PPT、评审结论与需求基线]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        </task>
+        <task id="117" uid="2012a0213b4a41e5af99bdc2f5499635" name="3 数据层与后端核心" color="#14563F" meeting="false" start="2026-10-05" duration="21" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[阶段 3：2026-10-05 ～ 2026-10-25]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        <task id="118" uid="91dc3f2813f949558938a039698257c7" name="3.1 建表与索引" color="#2F7D5C" meeting="false" start="2026-10-05" duration="3" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 3.1　责任人：方文锦
+交付：schema.sql v1.0（12 张表、联合索引与唯一键）]]></notes>
+            <depend id="119" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="119" uid="9e8fe8a6939d4144a1b2fad392672442" name="3.2 鉴权与账户" color="#2F7D5C" meeting="false" start="2026-10-08" duration="3" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 3.2　责任人：方文锦
+交付：A 族接口、JWT 与归属校验、统一返回与异常处理]]></notes>
+            <depend id="120" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="120" uid="b5753baf79e14337ab0b6e765f647ce0" name="3.3 每日目标" color="#2F7D5C" meeting="false" start="2026-10-11" duration="2" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 3.3　责任人：方文锦
+交付：B 族接口、按 effective_date 留版本]]></notes>
+            <depend id="121" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="121" uid="570ac534c12946aea97ced96946385bd" name="3.4 训练计划与记录" color="#2F7D5C" meeting="false" start="2026-10-13" duration="3" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 3.4　责任人：方文锦
+交付：C 族接口、计划/记录分离与同事务写入]]></notes>
+            <depend id="122" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="122" uid="0cb4255d043d48bc9dd794f4d9cb9a15" name="3.5 饮食与营养换算" color="#2F7D5C" meeting="false" start="2026-10-16" duration="3" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 3.5　责任人：方文锦
+交付：D 族接口、营养快照与按比例换算]]></notes>
+            <depend id="123" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="123" uid="3164ac1dc89e45dc965b74597437c3d9" name="3.6 体重" color="#2F7D5C" meeting="false" start="2026-10-19" duration="2" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 3.6　责任人：方文锦
+交付：E 族接口、(user_id, record_date) 唯一 upsert]]></notes>
+            <depend id="124" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="124" uid="3f9d9950ba9b4a7e8bfc0ac2e1cd36c9" name="3.7 统计" color="#2F7D5C" meeting="false" start="2026-10-21" duration="2" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 3.7　责任人：方文锦
+交付：F 族接口、完成率与缺失不补零口径]]></notes>
+            <depend id="125" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="125" uid="7e9f565802c04bc6bbdca5c51d02e44b" name="3.8 后台管理" color="#2F7D5C" meeting="false" start="2026-10-23" duration="3" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 3.8　责任人：方文锦
+交付：H 族接口、动作库/食物库/账户状态与 ADMIN 鉴权]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="126" uid="c144e38aea674473b7c044e1ceda0f5a" name="M2 后端核心接口可联调" color="#14563F" meeting="false" start="2026-10-25" duration="0" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[里程碑：M2 后端核心接口可联调（计划 2026-10-25）]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        </task>
+        <task id="127" uid="e57b8e0b4a9648d0917d1af13eae898b" name="4 前端页面与图表" color="#14563F" meeting="false" start="2026-10-19" duration="21" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[阶段 4：2026-10-19 ～ 2026-11-08]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        <task id="128" uid="3e6cac44b95f4eb1a61364176eac5297" name="4.1 登录与设置" color="#C08A3E" meeting="false" start="2026-10-19" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 4.1　责任人：陈智杰
+交付：登录/注册页、会话令牌管理、设置与资料页]]></notes>
+            <depend id="129" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="129" uid="738853e9cd72477aaee0b1ef5c17803e" name="4.2 训练饮食录入" color="#C08A3E" meeting="false" start="2026-10-23" duration="5" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 4.2　责任人：陈智杰
+交付：训练计划与记录页、饮食录入与换算提示]]></notes>
+            <depend id="130" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="130" uid="530fb26ae3af4ed48c80e5bf225512a7" name="4.3 体重记录" color="#C08A3E" meeting="false" start="2026-10-28" duration="3" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 4.3　责任人：陈智杰
+交付：体重录入与历史列表、有效天数展示]]></notes>
+            <depend id="131" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="131" uid="98cbea19b1dc464780df4beef6e14050" name="4.4 统计图表" color="#C08A3E" meeting="false" start="2026-10-31" duration="5" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 4.4　责任人：陈智杰
+交付：完成率、摄入趋势、体重趋势三图（ECharts 6.x）]]></notes>
+            <depend id="132" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="132" uid="747fb6ec44784cdfa1eb53f71053f0c8" name="4.5 后台管理页" color="#C08A3E" meeting="false" start="2026-11-05" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 4.5　责任人：陈智杰
+交付：动作库/食物库/账户状态维护页]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="133" uid="fcad77ee9bba4121b4f9db71086c7796" name="M3 Web 端全流程可用" color="#14563F" meeting="false" start="2026-11-08" duration="0" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[里程碑：M3 Web 端全流程可用（计划 2026-11-08）]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        </task>
+        <task id="134" uid="579fd3b52926479fae844dddd9f7c401" name="5 AI 分析模块" color="#14563F" meeting="false" start="2026-11-09" duration="21" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[阶段 5：2026-11-09 ～ 2026-11-29]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        <task id="135" uid="7bde26aeb6f14400ba902a24344bd928" name="5.1 授权与撤回" color="#2F7D5C" meeting="false" start="2026-11-09" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 5.1　责任人：方文锦
+交付：ai_consent 状态机、scope=BODY_DIET_TRAINING_30D、撤回留痕]]></notes>
+            <depend id="136" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="136" uid="f88ddf337e2b4bbcb609e2d1d56357e1" name="5.2 数据汇总与摘要" color="#2F7D5C" meeting="false" start="2026-11-13" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 5.2　责任人：方文锦
+交付：统计汇总与 ≤8 KB 摘要 JSON、身份字段剔除]]></notes>
+            <depend id="137" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="137" uid="df1a362550b54cef84f81318075e9218" name="5.3 模型接入" color="#2F7D5C" meeting="false" start="2026-11-17" duration="5" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 5.3　责任人：方文锦
+交付：Ollama + Qwen3-4B-Instruct-2507 接入、固定模板与超时控制]]></notes>
+            <depend id="138" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="138" uid="d9477cc98a8e4515af2fe84c49485439" name="5.4 报告生成与历史" color="#4F7C8C" meeting="false" start="2026-11-22" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 5.4　责任人：方文锦、陈智杰
+交付：G 族接口、五段式报告页与历史列表、物理删除]]></notes>
+            <depend id="139" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="139" uid="988868a890df4415b1aceb95f47348ea" name="5.5 一致性核对与降级" color="#C08A3E" meeting="false" start="2026-11-26" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 5.5　责任人：陈智杰
+交付：输出与 summary_json 核对、DEGRADED 降级与免责提示]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="140" uid="804efdd415f84b178272cb7962201a7f" name="M4 AI 分析全链路打通" color="#14563F" meeting="false" start="2026-11-29" duration="0" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[里程碑：M4 AI 分析全链路打通（计划 2026-11-29）]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        </task>
+        <task id="141" uid="71cbb695e6134070b214275ed8451a5c" name="6 移动端 Android 封装" color="#14563F" meeting="false" start="2026-11-16" duration="17" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[阶段 6：2026-11-16 ～ 2026-12-02]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        <task id="142" uid="7ea3572bf08c49648f143fdad9e159ed" name="6.1 手机布局适配" color="#C08A3E" meeting="false" start="2026-11-16" duration="6" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 6.1　责任人：陈智杰
+交付：320 px 起自适应、底部 5 项导航、触控目标 ≥44 pt]]></notes>
+            <depend id="143" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="143" uid="80525313d6ee4fe0bdf92752c68a2f79" name="6.2 Capacitor 工程与空壳包" color="#C08A3E" meeting="false" start="2026-11-22" duration="6" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 6.2　责任人：陈智杰
+交付：Capacitor 7 工程、空壳包验证、Web 兜底]]></notes>
+            <depend id="144" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="144" uid="5b3310b9f30e461c8780b738a7d09d1c" name="6.3 打包与真机调试" color="#C08A3E" meeting="false" start="2026-11-28" duration="5" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 6.3　责任人：陈智杰
+交付：APK 20–40 MB、真机安装登录与主流程]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="145" uid="e447a99d01d94d58b85652b2dc39ce29" name="M5 最初成品可用" color="#14563F" meeting="false" start="2026-12-02" duration="0" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[里程碑：M5 最初成品可用（计划 2026-12-02）]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        </task>
+        <task id="146" uid="9e986ac22e8447bcacd7a7ab9716c650" name="7 集成测试与验收" color="#14563F" meeting="false" start="2026-12-03" duration="18" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[阶段 7：2026-12-03 ～ 2026-12-20]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        <task id="147" uid="0f9a79156d2a4031966e3ecfe84efa9b" name="7.1 功能用例" color="#C08A3E" meeting="false" start="2026-12-03" duration="6" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 7.1　责任人：陈智杰
+交付：功能用例执行记录、缺陷清单初稿]]></notes>
+            <depend id="148" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="148" uid="a55137877be8413c9d1a33e0764c184a" name="7.2 跨账号与隐私验收" color="#C08A3E" meeting="false" start="2026-12-09" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 7.2　责任人：陈智杰
+交付：跨账号隔离、授权撤回、删除报告与隐私专项结论]]></notes>
+            <depend id="149" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="149" uid="1e25be050dcc4023a41f84610f884616" name="7.3 缺陷复测" color="#4F7C8C" meeting="false" start="2026-12-13" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 7.3　责任人：方文锦、陈智杰
+交付：缺陷整改与回归、遗留缺陷分级]]></notes>
+            <depend id="150" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="150" uid="a3c5a481f9994d858a5b6884a3081d28" name="7.4 性能检查" color="#2F7D5C" meeting="false" start="2026-12-17" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 7.4　责任人：方文锦
+交付：响应时间与并发实测、指标回填]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="151" uid="ce22b50c4680474f899fabddc34ff6d1" name="M6 测试验收通过" color="#14563F" meeting="false" start="2026-12-20" duration="0" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[里程碑：M6 测试验收通过（计划 2026-12-20）]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        </task>
+        <task id="152" uid="e8ce48b4432d4eb3a2a553b5c4f160a3" name="8 验收答辩" color="#14563F" meeting="false" start="2026-12-21" duration="10" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[阶段 8：2026-12-21 ～ 2026-12-30]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        <task id="153" uid="138ada2de2e0415eaf61037e24ce70ae" name="8.1 使用说明与部署文档" color="#2F7D5C" meeting="false" start="2026-12-21" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 8.1　责任人：方文锦
+交付：使用说明、部署文档（环境/初始化/启动/APK 构建）]]></notes>
+            <depend id="154" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="154" uid="7d4b01747eab4e1fb1acd33ccc747edf" name="8.2 答辩材料" color="#C08A3E" meeting="false" start="2026-12-25" duration="4" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 8.2　责任人：陈智杰
+交付：答辩 PPT、演示脚本、项目开发总结报告]]></notes>
+            <depend id="155" type="2" difference="0" hardness="Strong"/>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="155" uid="559a0c84ad9845a2b78cf0931e7c5d31" name="8.3 演示准备与归档" color="#4F7C8C" meeting="false" start="2026-12-29" duration="2" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[WBS 8.3　责任人：方文锦、陈智杰
+交付：演示环境确认、结项材料归档]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        <task id="156" uid="89a5ada16c094224992c45d476543e93" name="M7 结项答辩完成" color="#14563F" meeting="false" start="2026-12-30" duration="0" complete="0" expand="true" cost-manual-value="0" cost-calculated="false">
+            <notes><![CDATA[里程碑：M7 结项答辩完成（计划 2026-12-30）]]></notes>
+            <customproperty taskproperty-id="tpc0" value="false"/>
+        </task>
+        </task>
+    </tasks>
+    <resources>
+        <resource id="0" name="方文锦" function="0" contacts="" phone="">
+            <rate name="standard" value="25"/>
+        </resource>
+        <resource id="1" name="陈智杰" function="1" contacts="" phone="">
+            <rate name="standard" value="25"/>
+        </resource>
+    </resources>
+    <allocations>
+        <allocation task-id="102" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="103" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="104" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="105" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="106" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="107" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="107" resource-id="1" function="0" responsible="false" load="100.0"/>
+        <allocation task-id="110" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="110" resource-id="1" function="0" responsible="false" load="100.0"/>
+        <allocation task-id="111" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="112" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="112" resource-id="1" function="0" responsible="false" load="100.0"/>
+        <allocation task-id="113" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="113" resource-id="1" function="0" responsible="false" load="100.0"/>
+        <allocation task-id="114" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="114" resource-id="1" function="0" responsible="false" load="100.0"/>
+        <allocation task-id="115" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="115" resource-id="1" function="0" responsible="false" load="100.0"/>
+        <allocation task-id="116" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="116" resource-id="1" function="0" responsible="false" load="100.0"/>
+        <allocation task-id="118" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="119" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="120" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="121" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="122" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="123" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="124" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="125" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="128" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="129" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="130" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="131" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="132" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="135" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="136" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="137" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="138" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="138" resource-id="1" function="0" responsible="false" load="100.0"/>
+        <allocation task-id="139" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="142" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="143" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="144" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="147" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="148" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="149" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="149" resource-id="1" function="0" responsible="false" load="100.0"/>
+        <allocation task-id="150" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="153" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="154" resource-id="1" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="155" resource-id="0" function="0" responsible="true" load="100.0"/>
+        <allocation task-id="155" resource-id="1" function="0" responsible="false" load="100.0"/>
+    </allocations>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+    <roles>
+        <role id="0" name="需求与后端"/>
+        <role id="1" name="前端与原型"/>
+    </roles>
+</project>
