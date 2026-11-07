@@ -1,0 +1,38 @@
+# =====================================================================
+# FTDMS 文件类型声明
+# ---------------------------------------------------------------------
+# 说明：本仓库历史中部分文件（19 个 .java、1 个 .sql、4 个 .svg、
+#       2 个 .md、2 个 .html）以 CRLF 形式提交，其余为 LF。若在此强制
+#       `* text=auto eol=lf`，会让这 28 个文件立即出现整文件换行 diff。
+#       因此这里只声明二进制类型，不做换行规范化；如需统一 LF，
+#       应单独执行 `git add --renormalize .` 并作为一个独立提交评审。
+# =====================================================================
+
+# 二进制：不做文本转换，不参与按行合并
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.webp   binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.otf    binary
+*.jar    binary
+*.war    binary
+*.zip    binary
+*.gz     binary
+*.apk    binary
+*.pdf    binary
+
+# Office / WPS 文档：二进制，禁止文本 diff 与自动合并
+*.doc    binary
+*.docx   binary
+*.xls    binary
+*.xlsx   binary
+*.ppt    binary
+*.pptx   binary
+
+# Windows 批处理：检出时保持 CRLF，避免 cmd 解析异常
+*.bat    text eol=crlf
