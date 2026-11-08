@@ -54,10 +54,34 @@
   .avatar{width:26px;height:26px;border-radius:50%;background:var(--green-3);color:var(--green);display:grid;place-items:center;font-size:12px;font-weight:700}
   .app-main{flex:1;overflow-y:auto;padding:4px 18px 96px;scroll-behavior:smooth}
   .app-main::-webkit-scrollbar{width:0}
-  .bottom-nav{position:absolute;left:0;right:0;bottom:0;height:66px;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:6px;z-index:30}
+  .bottom-nav{position:absolute;left:0;right:0;bottom:0;height:66px;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(7,1fr);padding-bottom:6px;z-index:30}
   .bottom-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;color:#849087}
   .bottom-nav button i{font-style:normal;font-size:16px;line-height:1}
   .bottom-nav button.on{color:var(--green);font-weight:700}
+  .bottom-nav button.ai{color:var(--green);font-weight:700;gap:2px}
+  .bottom-nav button.ai i{width:36px;height:36px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:14px;border:3px solid #fff;box-shadow:0 7px 16px rgba(20,86,63,.26);margin-top:-15px;transition:.18s}
+  .bottom-nav button.ai.on i{background:var(--green-2)}
+  .bottom-nav button.ai:active i{transform:scale(.94)}
+
+  /* AI 分析 */
+  .ai-hero{background:linear-gradient(135deg,#14563f 0%,#2f7d5c 100%);border-radius:17px;padding:15px 15px 14px;color:#fff;margin-bottom:11px;position:relative;overflow:hidden}
+  .ai-hero::after{content:"";position:absolute;right:-28px;top:-30px;width:116px;height:116px;border-radius:50%;background:rgba(255,255,255,.09)}
+  .ai-hero .k{font-size:9px;letter-spacing:.16em;opacity:.72;position:relative}
+  .ai-hero h3{margin:5px 0 6px;font-size:17px;font-weight:700;position:relative;letter-spacing:-.01em}
+  .ai-hero p{margin:0;font-size:10.5px;line-height:1.7;opacity:.86;position:relative}
+  .consent-note{font-size:10.5px;color:#7c887e;line-height:1.7;margin:8px 0 10px}
+  .ai-sec{border-top:1px dashed #e7ebe2;padding-top:9px;margin-top:9px}
+  .ai-sec:first-child{border-top:0;padding-top:0;margin-top:0}
+  .ai-sec h4{margin:0 0 4px;font-size:11px;color:var(--green);font-weight:700}
+  .ai-sec p{margin:0;font-size:11.5px;line-height:1.78;color:#3f4c43}
+  .ai-tag{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;color:var(--green);background:#eaf2e7;border:1px solid #d7e5d3;padding:3px 7px;border-radius:999px}
+  .json{background:#f4f7f0;border:1px solid #e2e8db;border-radius:10px;padding:10px;font-family:Consolas,"Courier New",monospace;font-size:9.5px;line-height:1.62;color:#3c4a41;overflow-x:auto;white-space:pre;margin:8px 0 0}
+  .ai-hist{display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px dashed #e9ede4}
+  .ai-hist:first-of-type{border-top:0}
+  .ai-hist .nm{flex:1;min-width:0}
+  .ai-hist .nm b{display:block;font-size:11.5px;font-weight:600}
+  .ai-hist .nm span{font-size:9.5px;color:var(--muted)}
+  .ai-hist .del{color:#b7c1b7;font-size:13px;padding:2px 4px}
   .demo-strip{margin:8px 0 0;background:#f1e7cd;color:#7d5a1d;font-size:10.5px;padding:5px 10px;border-radius:7px;display:flex;justify-content:space-between;gap:8px}
 
   .page{animation:fade .22s ease both}
@@ -218,6 +242,7 @@
       <li>去饮食页加一份鸡胸肉，看汇总变化</li>
       <li>记录今天的体重，同日再存会覆盖</li>
       <li>切到统计页，切换 7 天 / 30 天</li>
+      <li>打开底栏正中的「AI」，授权后生成分析报告</li>
       <li>到「我的」改目标，或清空数据看空状态</li>
     </ol>
     <div class="actions">
@@ -304,7 +329,11 @@
         {date:addDays(-13),weight:70.8},{date:addDays(-10),weight:70.5},{date:addDays(-8),weight:70.3},
         {date:addDays(-6),weight:70.1},{date:addDays(-4),weight:69.9},{date:addDays(-3),weight:69.8},
         {date:addDays(-2),weight:69.7},{date:addDays(-1),weight:69.6},{date:addDays(0),weight:69.5}
-      ]
+      ],
+      ai:{
+        consent:{ granted:false, scope:"BODY_DIET_TRAINING_30D", grantedAt:null, revokedAt:null },
+        reports:[]
+      }
     };
   }
 
@@ -322,6 +351,11 @@
   state.screen = "login";
   state.modal = null;
   state.range = state.range || 7;
+  state.ai = state.ai || { consent:{ granted:false, scope:"BODY_DIET_TRAINING_30D", grantedAt:null, revokedAt:null }, reports:[] };
+  state.ai.consent = state.ai.consent || { granted:false, scope:"BODY_DIET_TRAINING_30D", grantedAt:null, revokedAt:null };
+  state.ai.reports = state.ai.reports || [];
+  state.aiRange = state.aiRange === 30 ? 30 : 7;
+  state.aiLoading = false;
 
   const app = $("#app");
 
@@ -426,14 +460,14 @@
       '<div class="brand"><b>循</b>FTDMS · G13</div>' +
       '<h1>循着自己的节奏，<br><span>练好每一天。</span></h1>' +
       '<p class="lede">把训练、饮食与身体变化放在一起。<br>这是一个可点击的高保真原型，数据只存在本机浏览器。</p>' +
-      '<button class="mode" data-act="login" data-mode="demo"><b>体验完整数据 <i>推荐 →</i></b><span>已准备 4 个训练计划、17 条饮食与 9 次体重记录，适合直接演示。</span></button>' +
+      '<button class="mode" data-act="login" data-mode="demo"><b>体验完整数据 <i>推荐 →</i></b><span>已准备 5 个训练计划、16 条饮食与 9 次体重记录，适合直接演示。</span></button>' +
       '<button class="mode" data-act="login" data-mode="empty"><b>从空账户开始 <i>→</i></b><span>清空记录，体验新用户第一次设置目标、记录训练的路径。</span></button>' +
       '<div class="foot">原型不含真实账号体系与网络请求；关闭浏览器后数据仍在，点击「我的 → 清空数据」可重置。<br>操作提示：底部导航切换页面，卡片和按钮均可点击。</div>' +
     '</div>';
   }
 
   function renderHead(){
-    const titles = {today:"今日", training:"训练", diet:"饮食", body:"体重", stats:"统计", profile:"我的"};
+    const titles = {today:"今日", training:"训练", diet:"饮食", ai:"AI 分析", body:"体重", stats:"统计", profile:"我的"};
     return '<header class="app-head">' +
       '<div class="head-row"><div><div class="head-title">你的健康记录空间</div>' +
       '<div style="font-size:17px;font-weight:700;margin-top:2px">' + (titles[state.screen] || "今日") + '</div></div>' +
@@ -443,9 +477,9 @@
   }
 
   function renderNav(){
-    const items = [["today","◈","今日"],["training","↗","训练"],["diet","◒","饮食"],["stats","▥","统计"],["profile","○","我的"]];
+    const items = [["today","◈","今日"],["training","↗","训练"],["diet","◒","饮食"],["ai","✧","AI"],["body","◇","体重"],["stats","▥","统计"],["profile","○","我的"]];
     return '<nav class="bottom-nav">' + items.map(([k,i,n]) =>
-      '<button data-act="nav" data-screen="' + k + '" class="' + (state.screen === k ? "on" : "") + '"><i>' + i + '</i>' + n + '</button>'
+      '<button data-act="nav" data-screen="' + k + '" class="' + (state.screen === k ? "on" : "") + (k === "ai" ? " ai" : "") + '"><i>' + i + '</i>' + n + '</button>'
     ).join("") + '</nav>';
   }
 
@@ -581,6 +615,187 @@
       '<p class="tiny" style="margin-top:12px;text-align:center">循练仅用于个人记录，营养数据为估算，不构成医疗建议。</p></div>';
   }
 
+  // ---------- AI 分析（对应接口 G1–G7，数据结构 DS15/DS16） ----------
+  const AI = {
+    scope: "BODY_DIET_TRAINING_30D",
+    model: "Qwen3-4B-Instruct-2507",
+    version: "qwen3:4b-instruct-2507-q4_K_M"
+  };
+
+  function aiDays(){ return state.aiRange === 30 ? 30 : 7; }
+
+  function nowText(){
+    const d = new Date();
+    return iso(d) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+  }
+
+  function aiStats(days){
+    const to = today();
+    const d0 = new Date(to + "T12:00:00"); d0.setDate(d0.getDate() - (days - 1));
+    const from = iso(d0);
+    const plans = state.plans.filter(p => p.date >= from && p.date <= to);
+    const cancelled = plans.filter(p => p.status === "cancelled").length;
+    const completed = plans.filter(p => p.status === "completed").length;
+    const planned = plans.length - cancelled;
+    const rate = planned > 0 ? Math.round(completed / planned * 100) : null;
+    const workouts = state.workouts.filter(w => w.date >= from && w.date <= to);
+    const diets = state.diets.filter(x => x.date >= from && x.date <= to);
+    const dietDays = Array.from(new Set(diets.map(x => x.date)));
+    const body = state.body.filter(b => b.date >= from && b.date <= to).slice().sort((a,b) => a.date < b.date ? -1 : 1);
+    let kcalSum = 0;
+    dietDays.forEach(day => { kcalSum += totals(day).kcal; });
+    const avgKcal = dietDays.length ? Math.round(kcalSum / dietDays.length) : null;
+    const validDays = new Set(diets.map(x => x.date).concat(body.map(b => b.date)).concat(workouts.map(w => w.date))).size;
+    const first = body.length ? body[0].weight : null;
+    const last = body.length ? body[body.length - 1].weight : null;
+    const change = (first != null && last != null) ? Math.round((last - first) * 10) / 10 : null;
+    const recent = body.slice(-7);
+    const seven = recent.length ? Math.round(recent.reduce((s,b) => s + b.weight, 0) / recent.length * 10) / 10 : null;
+    return {from, to, days, plans:plans.length, completed, cancelled, planned, rate,
+      workoutCount:workouts.length, dietDays:dietDays.length, avgKcal, validDays,
+      first, last, change, seven, bodyCount:body.length, goal:state.goal.kcal};
+  }
+
+  function buildSections(s){
+    const out = [];
+    out.push({t:"数据概况", b:"本次区间 " + s.from + " 至 " + s.to + "，共 " + s.days + " 天，有效记录 " + s.validDays + " 天；其中训练 " + s.workoutCount + " 次、饮食 " + s.dietDays + " 天、体重 " + s.bodyCount + " 次。缺失记录的日期按「未记录」处理，不计入任何均值。"});
+
+    const rateText = s.rate == null
+      ? "区间内没有可计入的训练计划，完成率按「暂无计划」处理，不记为 0%。"
+      : "计划 " + s.plans + " 个（已取消 " + s.cancelled + " 个不进入分母），完成 " + s.completed + " 个，完成率 " + s.rate + "%。" +
+        (s.rate >= 80 ? "执行稳定，可按当前频率继续推进。" : s.rate >= 50 ? "执行处于中等水平，建议把训练固定在一天中的固定时段。" : "执行率偏低，建议先把每周计划收敛到 2–3 次，优先保证完成。");
+    out.push({t:"训练执行", b: rateText});
+
+    const intakeText = s.avgKcal == null
+      ? "区间内没有饮食记录，无法估算摄入水平。"
+      : "按 " + s.dietDays + " 个有效日计算，日均摄入 " + s.avgKcal + " kcal，目标 " + s.goal + " kcal，平均" +
+        (s.avgKcal > s.goal ? "高出 " + (s.avgKcal - s.goal) + " kcal。" : "缺口 " + (s.goal - s.avgKcal) + " kcal。") +
+        (s.dietDays < s.days ? "记录覆盖 " + s.dietDays + "/" + s.days + " 天，日均值易受单日影响。" : "");
+    out.push({t:"营养摄入", b: intakeText});
+
+    const weightText = s.first == null
+      ? "区间内没有体重记录，趋势暂不成立。"
+      : "区间内 " + s.bodyCount + " 个有效记录点，从 " + s.first + " kg 到 " + s.last + " kg，变化 " + (s.change > 0 ? "+" : "") + s.change + " kg；最近 7 个记录日均值 " + s.seven + " kg。";
+    out.push({t:"体重趋势", b: weightText});
+
+    const tips = [];
+    if (s.rate != null && s.rate < 70) tips.push("把每周训练计划收敛到可完成的次数，先稳住完成率再加密");
+    if (s.avgKcal != null && s.avgKcal > s.goal) tips.push("日均摄入高于目标，优先减掉加餐与含糖饮料，正餐结构保持不变");
+    if (s.avgKcal != null && s.avgKcal < s.goal - 300) tips.push("摄入明显低于目标，注意蛋白质总量，避免用少食代替结构调整");
+    if (s.change != null && Math.abs(s.change) > 1.5) tips.push("区间内体重波动超过 1.5 kg，建议固定晨起空腹称重并记录同一时点");
+    if (s.dietDays < s.days * 0.6) tips.push("饮食记录覆盖不足，先补足记录再判断趋势，避免用小样本下结论");
+    if (!tips.length) tips.push("当前数据平稳，维持现有训练与饮食节奏，每两周复盘一次");
+    out.push({t:"可采取的调整", b: tips.map((x,i) => (i + 1) + ") " + x).join("；") + "。"});
+    return out;
+  }
+
+  function makeReport(s, degraded){
+    const sections = degraded ? [] : buildSections(s);
+    return {
+      id: Date.now(),
+      periodStart: s.from,
+      periodEnd: s.to,
+      periodDays: s.days,
+      status: degraded ? "DEGRADED" : "SUCCESS",
+      content: sections.map(x => "【" + x.t + "】" + x.b).join("\n"),
+      sections: sections,
+      validDays: s.validDays,
+      modelName: AI.model,
+      modelVersion: AI.version,
+      createdAt: nowText(),
+      notice: degraded
+        ? "模型服务暂不可用，本次仅返回统计值、未生成解释文本；稍后可重试，系统不会编造数据。"
+        : "报告由后端统计值 + 服务端模型生成，仅作个人记录参考，不构成医疗或营养处方。",
+      summaryJson: {
+        periodDays: s.days,
+        periodStart: s.from,
+        periodEnd: s.to,
+        validDays: s.validDays,
+        goal: { kcal: s.goal },
+        training: { planned: s.plans, completed: s.completed, cancelled: s.cancelled, completionRate: s.rate },
+        intake: { validDays: s.dietDays, avgKcal: s.avgKcal },
+        weight: { validDays: s.bodyCount, first: s.first, last: s.last, change: s.change, sevenDayAvg: s.seven },
+        notices: ["缺失日不计入均值", "完成率分母剔除已取消计划", "摘要不含姓名与手机号"]
+      }
+    };
+  }
+
+  function reportChip(status){
+    return status === "SUCCESS" ? '<span class="chip completed">SUCCESS</span>'
+      : status === "DEGRADED" ? '<span class="chip planned">DEGRADED</span>'
+      : '<span class="chip cancelled">FAILED</span>';
+  }
+
+  function reportBody(r){
+    if (r.status === "DEGRADED"){
+      const j = r.summaryJson;
+      return '<div class="ai-sec"><h4>统计值（未生成解释）</h4><p>有效记录 ' + r.validDays + ' 天；训练计划 ' + j.training.planned +
+        ' 个、完成 ' + j.training.completed + ' 个；日均摄入 ' + (j.intake.avgKcal == null ? "无记录" : j.intake.avgKcal + " kcal") +
+        '；体重 ' + (j.weight.change == null ? "无记录" : "变化 " + j.weight.change + " kg") + '。</p></div>';
+    }
+    return r.sections.map(x => '<div class="ai-sec"><h4>' + x.t + '</h4><p>' + x.b + '</p></div>').join("");
+  }
+
+  function renderAI(){
+    const days = aiDays();
+    const s = aiStats(days);
+    const c = state.ai.consent;
+    const reports = state.ai.reports;
+    const latest = reports[0];
+    const rest = reports.slice(1);
+
+    const consent = c.granted
+      ? '<div class="card"><div class="row"><div><div class="tiny">分析授权</div><b style="font-size:12.5px">' + c.scope + '</b></div><span class="chip completed">已授权</span></div>' +
+        '<div class="consent-note">授权于 ' + (c.grantedAt || "—") + '。范围仅限身体、饮食与训练记录；摘要不含姓名与手机号，模型无数据库直连权限，可随时撤回。</div>' +
+        '<button class="btn ghost block" data-act="ai-revoke">撤回授权</button></div>'
+      : '<div class="card"><div class="row"><div><div class="tiny">分析授权</div><b style="font-size:13.5px">还没有开启</b></div><span class="chip">未授权</span></div>' +
+        '<div class="consent-note">开启后系统才可读取你最近 30 天的身体、饮食与训练数据生成报告；未授权或已撤回时，生成接口返回 5001。</div>' +
+        '<button class="btn block" data-act="ai-consent">开启 AI 分析</button></div>';
+
+    const metrics = '<div class="grid3">' +
+      '<div class="metric"><b>' + (s.rate == null ? "—" : s.rate + "%") + '</b><span>计划完成率</span></div>' +
+      '<div class="metric"><b>' + (s.avgKcal == null ? "—" : s.avgKcal) + '</b><span>日均摄入 kcal</span></div>' +
+      '<div class="metric"><b>' + (s.change == null ? "—" : (s.change > 0 ? "+" : "") + s.change) + '</b><span>区间体重变化 kg</span></div></div>';
+
+    let latestHtml;
+    if (state.aiLoading){
+      latestHtml = '<div class="card"><div class="row"><b style="font-size:13px">正在生成分析…</b><span class="chip">G4</span></div>' +
+        '<div class="skeleton" style="height:11px;margin-top:12px"></div><div class="skeleton" style="height:11px;margin-top:8px;width:86%"></div><div class="skeleton" style="height:11px;margin-top:8px;width:72%"></div>' +
+        '<div class="tiny" style="margin-top:10px">服务端先按规则汇总统计值，再交本地模型组织文字；P95 ≤ 45 s。</div></div>';
+    } else if (!latest){
+      latestHtml = '<div class="card"><div class="empty"><span class="ico">✦</span>还没有分析报告<br><span class="tiny">选好区间后点「生成分析报告」</span></div></div>';
+    } else {
+      latestHtml = '<div class="card" id="ai-latest"><div class="row"><div><div class="tiny">最新报告 · ' + latest.periodStart + ' 至 ' + latest.periodEnd + '</div>' +
+        '<b style="font-size:13px">' + latest.periodDays + ' 天区间 · 有效 ' + latest.validDays + ' 天</b></div>' + reportChip(latest.status) + '</div>' +
+        reportBody(latest) +
+        '<div class="row" style="margin-top:10px;align-items:flex-end"><div class="tiny" style="flex:1">' + latest.modelName + '<br>' + latest.createdAt + '</div>' +
+        '<button class="btn ghost sm" data-act="ai-detail" data-id="' + latest.id + '">输入摘要</button></div>' +
+        '<div class="tiny" style="margin-top:8px">' + latest.notice + '</div></div>';
+    }
+
+    const hist = rest.length
+      ? '<div class="card"><div class="row"><b style="font-size:12.5px">历史报告</b><span class="chip ghost">' + rest.length + ' 条</span></div>' +
+        rest.slice(0,3).map(r => '<div class="ai-hist"><div class="nm"><b>' + r.periodStart + ' → ' + r.periodEnd + '</b><span>' + r.createdAt + ' · 有效 ' + r.validDays + ' 天</span></div>' +
+          reportChip(r.status) + '<button class="del" data-act="ai-delete" data-id="' + r.id + '">×</button></div>').join("") +
+        (rest.length > 3 ? '<div class="tiny" style="margin-top:8px">仅显示最近 3 条，完整列表见 G5 分页接口。</div>' : '') + '</div>'
+      : '';
+
+    return '<div class="page"><p class="eyebrow">AI COACH / 近 ' + days + ' 天</p>' +
+      '<h2 class="h1">让数据，<br>替你说一句话。</h2>' +
+      '<p class="sub">数值全部由后端按确定规则算出，模型只负责组织文字；模型不可用时只给统计值，不编造结论。</p>' +
+      '<div class="ai-hero"><div class="k">LOCAL MODEL · ON-DEVICE SERVER</div>' +
+      '<h3>' + AI.model + '</h3><p>CPU 推理，摘要 ≤ 8 KB；报告与输入摘要一并入库，可追溯、可删除。</p></div>' +
+      consent +
+      '<div class="seg"><button class="' + (days === 7 ? "on" : "") + '" data-act="ai-range" data-days="7">7 天</button>' +
+      '<button class="' + (days === 30 ? "on" : "") + '" data-act="ai-range" data-days="30">30 天</button></div>' +
+      '<div style="height:10px"></div>' + metrics +
+      (state.aiLoading ? latestHtml
+        : '<button class="btn block" data-act="ai-generate">生成 ' + days + ' 天分析报告</button>' +
+          '<div style="text-align:center;margin:9px 0 11px"><button class="link" data-act="ai-degrade">演示：模型不可用时的降级结果（DEGRADED）</button></div>' +
+          latestHtml + hist) +
+      '<p class="tiny" style="margin-top:12px;text-align:center">本页对应接口 G1–G7；报告字段与 G4 响应、数据结构 DS16 一致，输入摘要即 summaryJson（DS15）。</p></div>';
+  }
+
   function renderModal(){
     const m = state.modal; if (!m) return "";
     let body = "";
@@ -624,6 +839,17 @@
         '<div class="field"><label>脂肪（g）</label><input class="input" id="goal-f" type="number" value="' + state.goal.fat + '"></div>' +
         '<div class="sheet-foot"><button class="btn" data-act="save-goal">保存目标</button><button class="btn ghost" data-act="close">取消</button></div></div>';
     }
+    if (m.type === "aiReport"){
+      const r = state.ai.reports.find(x => String(x.id) === String(m.id));
+      if (!r) return "";
+      const detail = r.status === "SUCCESS" ? r.sections.map(x => '<div class="ai-sec"><h4>' + x.t + '</h4><p>' + x.b + '</p></div>').join("") : reportBody(r);
+      body = '<div class="sheet"><div class="grab"></div><div class="row"><h2>' + r.periodStart + ' → ' + r.periodEnd + '</h2>' + reportChip(r.status) + '</div>' +
+        '<p class="sheet-sub">' + r.periodDays + ' 天区间 · 有效 ' + r.validDays + ' 天 · ' + r.createdAt + '<br>' + r.modelName + ' · ' + r.modelVersion + '</p>' +
+        detail +
+        '<div class="tiny" style="margin-top:12px">输入摘要 summaryJson（G6 返回，用于数值核对与追溯）</div>' +
+        '<pre class="json">' + JSON.stringify(r.summaryJson, null, 2) + '</pre>' +
+        '<div class="sheet-foot"><button class="btn danger" data-act="ai-delete" data-id="' + r.id + '">删除报告</button><button class="btn ghost" data-act="close">关闭</button></div></div>';
+    }
     if (m.type === "confirm"){
       const p = state.plans.find(x => x.id === m.id);
       body = '<div class="sheet"><div class="grab"></div><h2>取消这个计划？</h2><p class="sheet-sub">' + (p ? p.title : "") + ' 取消后不进入完成率分母，也不会删除已有训练记录。</p>' +
@@ -637,7 +863,7 @@
       app.innerHTML = renderLogin();
       return;
     }
-    const screens = {today:renderToday, training:renderTraining, diet:renderDiet, body:renderBody, stats:renderStats, profile:renderProfile};
+    const screens = {today:renderToday, training:renderTraining, diet:renderDiet, ai:renderAI, body:renderBody, stats:renderStats, profile:renderProfile};
     const content = (screens[state.screen] || renderToday)();
     app.innerHTML = renderHead() + '<main class="app-main">' + content + '</main>' + renderNav() + renderModal();
     bindModal();
@@ -749,6 +975,39 @@
     else if (act === "range"){
       if (el.dataset.range === "custom"){ toast("原型里自定义区间用 7/30 天演示；真实产品可选任意起止日期"); return; }
       state.range = Number(el.dataset.range); save(); render();
+    }
+    else if (act === "ai-consent"){
+      state.ai.consent = { granted:true, scope:AI.scope, grantedAt:nowText(), revokedAt:null };
+      save(); render(); toast("已开启 AI 分析授权，可生成报告了");
+    }
+    else if (act === "ai-revoke"){
+      state.ai.consent.granted = false;
+      state.ai.consent.revokedAt = nowText();
+      save(); render(); toast("已撤回授权；历史报告仍可查看与删除（G3）");
+    }
+    else if (act === "ai-range"){
+      state.aiRange = Number(el.dataset.days) === 30 ? 30 : 7;
+      save(); render();
+    }
+    else if (act === "ai-generate" || act === "ai-degrade"){
+      if (!state.ai.consent.granted){ toast("未授权 AI 分析（5001）：请先开启授权"); return; }
+      const st = aiStats(aiDays());
+      if (st.validDays < 3){ toast("有效记录不足（5003）：区间内有效记录少于 3 天"); return; }
+      const degraded = act === "ai-degrade";
+      state.aiLoading = true; render();
+      setTimeout(function(){
+        state.aiLoading = false;
+        state.ai.reports.unshift(makeReport(aiStats(aiDays()), degraded));
+        save(); render();
+        const box = document.getElementById("ai-latest");
+        if (box) box.scrollIntoView({ block: "start" });
+        toast(degraded ? "模型不可用，已降级返回统计值（DEGRADED）" : "报告已生成（SUCCESS）");
+      }, 1100);
+    }
+    else if (act === "ai-detail"){ open({type:"aiReport", id:el.dataset.id}); }
+    else if (act === "ai-delete"){
+      state.ai.reports = state.ai.reports.filter(r => String(r.id) !== String(el.dataset.id));
+      state.modal = null; save(); render(); toast("报告已删除（G7）");
     }
     else if (act === "goal"){ open({type:"goal"}); }
     else if (act === "save-goal"){
