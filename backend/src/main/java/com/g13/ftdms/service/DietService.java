@@ -40,6 +40,11 @@ public class DietService {
     /** 餐次固定四种，用于汇总结果补齐"空餐次"占位 */
     private static final List<String> MEALS = List.of("BREAKFAST", "LUNCH", "DINNER", "SNACK");
 
+    /** 摄入克重下限（g） */
+    private static final BigDecimal MIN_GRAMS = BigDecimal.ONE;
+    /** 摄入克重上限（g） */
+    private static final BigDecimal MAX_GRAMS = new BigDecimal("2000");
+
     private final DietRecordRepository dietRepository;
     private final FoodService foodService;
     private final GoalService goalService;
@@ -79,6 +84,7 @@ public class DietService {
     public DietDtos.DietWriteResponse create(Long userId, DietDtos.DietCreateRequest request) {
         LocalDate recordDate = DateGuard.parseDate(request.recordDate(), "记录日期");
         DateGuard.requireRecent(recordDate, "记录日期", clock);
+        requireGrams(request.grams());
 
         Food food = foodService.loadVisible(userId, request.foodId());
 
@@ -118,6 +124,7 @@ public class DietService {
             record.setMeal(request.meal());
         }
         if (request.grams() != null && request.grams().compareTo(record.getGrams()) != 0) {
+            requireGrams(request.grams());
             BigDecimal originalGrams = record.getGrams();
             record.setSnapshotKcal(rescaleSnapshot(record.getSnapshotKcal(), originalGrams, request.grams()));
             record.setSnapshotProteinG(rescaleSnapshot(record.getSnapshotProteinG(), originalGrams, request.grams()));
@@ -204,6 +211,21 @@ public class DietService {
             throw BizException.param("原饮食记录克重不合法，无法调整快照");
         }
         return nz(snapshot).multiply(grams).divide(originalGrams, 2, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * 克重区间校验。
+     *
+     * <p>克重越界使用独立的 4001（而非通用 1001），对应接口文档 2.8 与
+     * SRS FR-12 的错误码约定；Bean Validation 只保留 @NotNull 与小数位校验。</p>
+     */
+    private void requireGrams(BigDecimal grams) {
+        if (grams == null) {
+            throw BizException.param("摄入克重不能为空");
+        }
+        if (grams.compareTo(MIN_GRAMS) < 0 || grams.compareTo(MAX_GRAMS) > 0) {
+            throw new BizException(ErrorCode.GRAMS_OUT_OF_RANGE, "摄入克重需在 1–2000 g 之间");
+        }
     }
 
     /** 实体 → 列表项视图 */

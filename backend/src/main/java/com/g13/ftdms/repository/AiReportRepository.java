@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 /**
- * AI 分析报告仓储（数据层已就位，接口在 W7 实现）。
+ * AI 分析报告仓储（G4–G7）。
  *
  * <p>报告按生成时间倒序分页；详情与删除同样带 userId 条件，保证只能操作本人报告。</p>
  */

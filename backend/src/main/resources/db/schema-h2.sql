@@ -170,8 +170,8 @@ CREATE TABLE IF NOT EXISTS ai_report (
     user_id       BIGINT       NOT NULL,
     period_start  DATE         NOT NULL,
     period_end    DATE         NOT NULL,
-    summary_json  VARCHAR(4000) NOT NULL,
-    content       VARCHAR(4000),
+    summary_json  VARCHAR(8000) NOT NULL,
+    content       VARCHAR(8000),
     model_name    VARCHAR(100),
     model_version VARCHAR(50),
     status        VARCHAR(16)  NOT NULL DEFAULT 'SUCCESS',
@@ -179,3 +179,7 @@ CREATE TABLE IF NOT EXISTS ai_report (
     PRIMARY KEY (id)
 );
 CREATE INDEX IF NOT EXISTS idx_report_user_created ON ai_report (user_id, created_at);
+
+-- 旧版 H2 文件库的 ai_report 列为 VARCHAR(4000)，启动时无损扩宽以容纳 8 KB 摘要
+ALTER TABLE ai_report ALTER COLUMN summary_json VARCHAR(8000);
+ALTER TABLE ai_report ALTER COLUMN content VARCHAR(8000);

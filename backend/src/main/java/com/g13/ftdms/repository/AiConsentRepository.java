@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * AI 分析授权仓储（数据层已就位，接口在 W7 实现）。
+ * AI 分析授权仓储（G1–G3）。
  *
  * <p>取"最近一条有效授权"作为判断依据：授权可撤回，撤回后新增一条 REVOKED 记录，
  * 因此按 id 倒序取第一条即可得到当前有效状态。</p>

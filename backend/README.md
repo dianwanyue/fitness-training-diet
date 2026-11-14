@@ -1,8 +1,8 @@
 # FTDMS 后端服务（数据层与后端核心）
 
 健身训练与饮食管理系统（FTDMS）的后端实现，Spring Boot 3.3 + Spring Data JPA + Spring Security(JWT) + MySQL 5.7+（验收环境 8.4）。
-本目录交付**数据层与后端核心**：账户鉴权、每日目标、训练计划与记录、饮食记录、身体数据、统计分析、后台管理。
-AI 分析接口（G 族）按 SDP 安排在 W7 实现，本次不包含（数据表与实体已就位）。
+本目录交付**数据层、后端核心与 AI 分析接口**：账户鉴权、每日目标、训练计划与记录、饮食记录、身体数据、统计分析、AI 授权与报告、后台管理。
+AI 分析（G 族）已于 2026-11-14 实现：统计值由后端按 F 族同一口径算出，模型只负责组织语言；模型不可用时降级为 DEGRADED，不编造结论。
 
 ## 快速开始
 
@@ -15,6 +15,13 @@ mvn spring-boot:run -Dspring-boot.run.profiles=h2
 
 启动后访问 <http://localhost:8080/api/v1/exercises> 应返回 401（未带令牌即为正常）。
 H2 数据文件位于 `backend/data/ftdms.mv.db`，删除该目录即可重置。演示管理员 `admin / Admin@12345`。
+
+AI 分析默认连接本机 Ollama（`http://127.0.0.1:11434`）。未启动模型时 G4 仍返回 200，但报告状态为 `DEGRADED`、仅保留统计值；如需换地址或超时：
+```bash
+OLLAMA_BASE_URL=http://127.0.0.1:11434 OLLAMA_MODEL=qwen3:4b-instruct-2507-q4_K_M \
+AI_TIMEOUT_SECONDS=60 mvn spring-boot:run -Dspring-boot.run.profiles=h2
+```
+`AI_ENABLED=false` 可强制走降级路径，用于演示与测试。
 
 ### 方式二：连接 MySQL（正式运行）
 
@@ -76,9 +83,10 @@ backend/
 | D 饮食 | 食物库、记录 CRUD、当日汇总 | `/foods*`、`/diets*` |
 | E 身体 | 体重 upsert、列表、删除 | `/body-records*` |
 | F 统计 | 完成率、摄入趋势、体重趋势 | `/stats/*` |
+| G AI 分析 | 授权/撤回、报告生成/历史/详情/删除 | `/ai/consent`、`/ai/reports*` |
 | H 管理 | 动作/食物维护、账户状态 | `/admin/*`（需 ADMIN） |
 
-实际 Controller/DTO 的字段、分页、日期限制、响应封套与计划/训练记录关系见 [联调契约](API_CONTRACT.md)。需求基线另见 `docs/接口文档/健身训练与饮食管理系统_接口文档V1.4.docx`。
+实际 Controller/DTO 的字段、分页、日期限制、响应封套、计划/训练记录关系与 AI 降级口径见 [联调契约](API_CONTRACT.md)。需求基线另见 `docs/接口文档/健身训练与饮食管理系统_接口文档V1.5.docx`。
 
 > 业务错误通常仍返回 HTTP 200，调用方必须检查 `code`；不要仅依赖 HTTP 状态判断保存成功。注册不返回 token，需另调用登录。
 
@@ -89,11 +97,11 @@ mvn test
 mvn package
 ```
 
-集成测试使用独立的内存 H2 数据库 `api-integration`，不清空演示 profile 的文件数据库。测试覆盖真实 JWT、资源归属、提交后重新查询、日期规则、计划与实际记录关系及统计口径；不等价于 MySQL/Android 真机验收。
+集成测试使用独立的内存 H2 数据库 `api-integration`，不清空演示 profile 的文件数据库。测试覆盖真实 JWT、资源归属、提交后重新查询、日期规则、计划与实际记录关系及统计口径；AI 摘要构建与模型客户端另有用例，不依赖真实模型进程；不等价于 MySQL/Android 真机验收。
 
-2026-11-04 在 Windows / IDEA JBR 25.0.4 下执行：**25 项自动化测试通过，0 失败、0 错误、0 跳过**（15 项 `ApiIntegrationTest`、5 项 `DateGuardTest`、5 项 `NutritionCalculatorTest`）。该数字不与历史 README 的55项手工自测混算。
+2026-11-14 在 Windows / JDK 17.0.20 / Maven 3.9.16 下执行：**33 项自动化测试通过，0 失败、0 错误、0 跳过**（15 项 `ApiIntegrationTest`、5 项 `DateGuardTest`、5 项 `NutritionCalculatorTest`、3 项 `AiModelClientTest`、2 项 `AiSummaryBuilderTest`、3 项 `AiContentGuardTest`）。该数字不与历史 README 的 55 项手工自测混算。
 
-本轮修复包括：修改饮食克重沿用原快照与来源；账户停用后旧 JWT 即时失效；昵称/生日空串清除；缺失摄入 kcal 显式输出 null；未知接口返回1004；训练记录最多补录365天。原快照按两位小数保存，克重比例换算仍有相同精度边界。
+2026-11-14 新增 AI 分析：G1–G3 授权/撤回、G4 生成、G5 历史、G6 详情、G7 删除；摘要≤8 KB、有效记录<3 天返回 5003、模型不可用按 DEGRADED 落库、跨账号统一 1004。另将摄入克重越界从通用 1001 改为 4001，与接口文档错误码表一致。
 
 推荐 JDK 21；编译目标仍为 Java 17。为兼容 JDK 23+（包括 IDEA JBR 25），已显式配置支持 JDK 25 的 Lombok 1.18.42 注解处理器，不依赖旧版 javac 自动发现行为。
 

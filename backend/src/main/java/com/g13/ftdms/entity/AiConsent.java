@@ -17,9 +17,8 @@ import java.time.LocalDateTime;
 /**
  * AI 分析授权实体（表 {@code ai_consent}），对应数据字典 D11。
  *
- * <p>数据层在本阶段即已就位：授权必须显式、可撤回、可追溯。
- * 接口（G1–G3）计划在 W7 实现，届时直接复用本实体与 {@code AiConsentRepository}，
- * 无需再改表结构。</p>
+ * <p>授权必须显式、可撤回、可追溯。G1–G3 接口由 {@code AiService} 实现，
+ * 直接复用本实体与 {@code AiConsentRepository}。</p>
  */
 @Entity
 @Table(name = "ai_consent")

@@ -81,6 +81,20 @@ public class ApiResponse<T> {
         return new ApiResponse<>(errorCode.getCode(), msg, null);
     }
 
+    /**
+     * 构造带业务数据的失败响应（如参数校验的字段级错误列表）。
+     *
+     * @param errorCode 错误码枚举
+     * @param message   覆盖默认提示语；为 null 时使用枚举默认文案
+     * @param data      失败时仍需返回给调用方的结构化信息
+     * @param <T>       数据类型
+     * @return 非 0 业务码的响应体
+     */
+    public static <T> ApiResponse<T> fail(ErrorCode errorCode, String message, T data) {
+        String msg = (message == null || message.isBlank()) ? errorCode.getMessage() : message;
+        return new ApiResponse<>(errorCode.getCode(), msg, data);
+    }
+
     public int getCode() {
         return code;
     }

@@ -86,6 +86,19 @@ app:
   login-guard:
     max-failures: 5
     window-seconds: 300
+  # AI 健身分析：服务端本地 Ollama，超时或不可达时按 DEGRADED 降级
+  ai:
+    enabled: ${AI_ENABLED:true}
+    base-url: ${OLLAMA_BASE_URL:http://127.0.0.1:11434}
+    model: ${OLLAMA_MODEL:qwen3:4b-instruct-2507-q4_K_M}
+    model-name: ${OLLAMA_MODEL_NAME:Qwen3-4B-Instruct-2507}
+    timeout-seconds: ${AI_TIMEOUT_SECONDS:60}
+    connect-timeout-seconds: ${AI_CONNECT_TIMEOUT_SECONDS:3}
+    max-summary-bytes: 8192
+    max-content-chars: 4096
+    min-valid-days: 3
+    temperature: 0.2
+    num-predict: 900
 
 # ---------------- 日志 ----------------
 logging:

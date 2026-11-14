@@ -1,13 +1,14 @@
 # 前后端联调契约（按实际 Controller / DTO 核对）
 
-统一前缀 `/api/v1`。本文件描述当前实现；AI G 族尚未实现。
+统一前缀 `/api/v1`。本文件描述当前实现；AI G 族已按 2026-11-14 实现（G1–G7）。
 
 ## 通用约定
 
 - 请求/响应 JSON。私有接口带 `Authorization: Bearer <token>`，不传 `userId`。
 - 所有接口响应封套 `{code,message,data,timestamp,traceId}`。成功 `code=0`；无数据为 `data:null`。
 - **业务错误通常仍为 HTTP 200，必须检查 code**。Security 返回 HTTP 401/code1002、HTTP403/code1003。
-- 1001 参数，1002 未认证/令牌失效，1003 无权限，1004 资源不存在或不属于本人，1005 状态冲突，1006 重复，2001 账号/口令错误，2002 账户停用，9000 内部错误。
+- 字段校验失败（code=1001）时 `data.errors` 为 `[{field,message}]`；其余业务错误 `data:null`。
+- 1001 参数，1002 未认证/令牌失效，1003 无权限，1004 资源不存在或不属于本人，1005 状态冲突，1006 重复，2001 账号/口令错误，2002 账户停用，4001 摄入克重超出 1–2000 g，5001 未授权 AI 分析，5002 模型不可用（保留码，仅日志），5003 有效记录不足，9000 内部错误。
 - DTO 可选字段通常省略 null；`data`、统计空均值、空完成率和空目标明确输出 null。调用方不要把缺失或 null 当零值。
 - 日期 `yyyy-MM-dd`；日期时间 **`yyyy-MM-dd HH:mm:ss`（空格，不是 T）**；业务时区 `Asia/Shanghai`。
 - 所有 `from/to` 查询含首尾，要求 `from<=to`，最多 **366 个自然日**。没有服务端默认范围，除注明外必须同时提供。
@@ -109,8 +110,31 @@ weightKg20–300。列表仅有效日，不补零；note不在当前读DTO中。
 | `/stats/intake` | `{days:[{date,kcal,recorded}],avg:{kcal,proteinG,carbG,fatG}或null,validDays,target:Goal或null}`。包含区间每一天；无记录kcal=null，recorded=false；avg是**整个所选区间有效日**平均，不必然七日 |
 | `/stats/weight` | `{points:[{date,weightKg}],first,last,change,sevenDayAvg,validDays}`。points仅有效日；change=last-first；七日窗口以to为锚、并限于所选区间，validDays为该窗口有效日数；无值返回null |
 
-## H 管理（仅 ADMIN）
+## G AI 健身分析
 
+`scope` 首版唯一取值 `BODY_DIET_TRAINING_30D`。授权与报告均按令牌身份隔离，管理员不可读取。
+
+| 方法/路径 | 请求 | data |
+| --- | --- | --- |
+| GET `/ai/consent` | 无 | `{granted,scope,grantedAt?,revokedAt?}`；从未授权 `granted=false`，scope 返回默认范围 |
+| POST `/ai/consent` | `{scope}` | `{granted:true,scope,grantedAt}`；已有有效授权时幂等返回原记录 |
+| DELETE `/ai/consent` | 无 | `{granted:false,revokedAt}`；无有效授权返回5001 |
+| POST `/ai/reports` | `{periodDays?}` | 报告视图，见下；未授权5001，有效记录<3天5003 |
+| GET `/ai/reports` | page?,size? | 分页 `{list,page,size,total}`，项为 `{id,periodStart,periodEnd,periodDays,status,validDays,createdAt}`，生成时间/id倒序 |
+| GET `/ai/reports/{id}` | 无 | 报告视图 + `summaryJson`（DS15），仅本人 |
+| DELETE `/ai/reports/{id}` | 无 | null，物理删除，仅本人 |
+
+`periodDays` 可省略，缺省30，只接受7或30。报告视图：
+`{id,periodStart,periodEnd,periodDays,status,content,modelName,modelVersion,validDays,createdAt,notice}`。
+
+- `status`：`SUCCESS` 或 `DEGRADED`。模型不可达/超时/输出为空时仍返回 HTTP200 + code0，`status=DEGRADED`、`content=""`，`summaryJson` 保留统计值；不返回5002。
+- 模型只接收摘要：区间、基础档案（性别/年龄/身高/体重）、目标、训练/营养/体重统计与口径说明；不含姓名、手机号、用户名。
+- 有效天数 = 饮食记录日 ∪ 训练记录日 ∪ 体重记录日；缺失日不补零、不参与均值。
+- 正文五段：【数据概况】【训练执行】【营养摄入】【体重趋势】【可采取的调整】。后端会核对五段标题与关键数值；不一致时不改写正文，但在 `notice` 中提示“请以统计值为准”。
+- `summaryJson` 为生成时快照，序列化≤8KB；`validDays` 与报告列表同源。
+- 服务端配置：`OLLAMA_BASE_URL`（默认 `http://127.0.0.1:11434`）、`OLLAMA_MODEL`、`AI_TIMEOUT_SECONDS`（默认60）、`AI_ENABLED`。模型进程未启动时连接快速失败并降级，不阻塞统计接口。
+
+## H 管理（仅 ADMIN）
 - POST `/admin/exercises`：`{name,muscleGroup?,equipment?}`。
 - PUT `/admin/exercises/{id}`：`{name?,muscleGroup?,equipment?,status?}`。
 - POST `/admin/foods`：`{name,brand?,kcalPer100g?,proteinPer100g?,carbPer100g?,fatPer100g?,state,source}`。

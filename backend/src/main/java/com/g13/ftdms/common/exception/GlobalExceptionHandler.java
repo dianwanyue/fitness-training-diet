@@ -2,8 +2,8 @@ package com.g13.ftdms.common.exception;
 
 import com.g13.ftdms.common.api.ApiResponse;
 import com.g13.ftdms.common.api.ErrorCode;
+import com.g13.ftdms.common.api.FieldErrorDetail;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +21,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -44,36 +46,49 @@ public class GlobalExceptionHandler {
         return ApiResponse.fail(ex.getErrorCode(), ex.getMessage());
     }
 
-    /** 请求体字段校验失败（@Valid 触发）：拼出「字段: 提示」摘要，前端可直接展示 */
+    /** 请求体字段校验失败（@Valid 触发）：返回 data.errors 字段级列表，便于前端定位 */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiResponse<Void> handleInvalidBody(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        String detail = ex.getBindingResult().getFieldErrors().stream()
-                .map(this::formatFieldError)
+    public ApiResponse<Map<String, List<FieldErrorDetail>>> handleInvalidBody(
+            MethodArgumentNotValidException ex, HttpServletRequest request) {
+        List<FieldErrorDetail> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(this::toDetail)
                 .distinct()
-                .collect(Collectors.joining("；"));
+                .toList();
+        String detail = errors.stream().map(FieldErrorDetail::message)
+                .distinct().collect(Collectors.joining("；"));
         log.warn("参数校验失败 path={} detail={}", request.getRequestURI(), detail);
-        return ApiResponse.fail(ErrorCode.PARAM_INVALID, detail.isEmpty() ? null : detail);
+        return ApiResponse.fail(ErrorCode.PARAM_INVALID, detail.isEmpty() ? null : detail,
+                Map.of("errors", errors));
     }
 
     /** 表单/查询参数绑定失败（@ModelAttribute） */
     @ExceptionHandler(BindException.class)
-    public ApiResponse<Void> handleBind(BindException ex, HttpServletRequest request) {
-        String detail = ex.getFieldErrors().stream()
-                .map(this::formatFieldError)
+    public ApiResponse<Map<String, List<FieldErrorDetail>>> handleBind(
+            BindException ex, HttpServletRequest request) {
+        List<FieldErrorDetail> errors = ex.getFieldErrors().stream()
+                .map(this::toDetail)
                 .distinct()
-                .collect(Collectors.joining("；"));
+                .toList();
+        String detail = errors.stream().map(FieldErrorDetail::message)
+                .distinct().collect(Collectors.joining("；"));
         log.warn("参数绑定失败 path={} detail={}", request.getRequestURI(), detail);
-        return ApiResponse.fail(ErrorCode.PARAM_INVALID, detail.isEmpty() ? null : detail);
+        return ApiResponse.fail(ErrorCode.PARAM_INVALID, detail.isEmpty() ? null : detail,
+                Map.of("errors", errors));
     }
 
     /** 方法参数级校验失败（@RequestParam 上的 @Min/@Max 等） */
     @ExceptionHandler(ConstraintViolationException.class)
-    public ApiResponse<Void> handleConstraint(ConstraintViolationException ex, HttpServletRequest request) {
-        String detail = ex.getConstraintViolations().stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.joining("；"));
+    public ApiResponse<Map<String, List<FieldErrorDetail>>> handleConstraint(
+            ConstraintViolationException ex, HttpServletRequest request) {
+        List<FieldErrorDetail> errors = ex.getConstraintViolations().stream()
+                .map(v -> new FieldErrorDetail(v.getPropertyPath().toString(), v.getMessage()))
+                .distinct()
+                .toList();
+        String detail = errors.stream().map(FieldErrorDetail::message)
+                .distinct().collect(Collectors.joining("；"));
         log.warn("参数约束失败 path={} detail={}", request.getRequestURI(), detail);
-        return ApiResponse.fail(ErrorCode.PARAM_INVALID, detail.isEmpty() ? null : detail);
+        return ApiResponse.fail(ErrorCode.PARAM_INVALID, detail.isEmpty() ? null : detail,
+                Map.of("errors", errors));
     }
 
     /** JSON 解析失败：字段类型不匹配、日期格式非法、请求体为空等 */
@@ -134,9 +149,10 @@ public class GlobalExceptionHandler {
         return ApiResponse.fail(ErrorCode.INTERNAL_ERROR, null);
     }
 
-    /** 把 FieldError 转成「中文提示」；有 defaultMessage 时优先使用 */
-    private String formatFieldError(FieldError error) {
+    /** 把 FieldError 转成字段级错误明细；有 defaultMessage 时优先使用 */
+    private FieldErrorDetail toDetail(FieldError error) {
         String msg = error.getDefaultMessage();
-        return (msg == null || msg.isBlank()) ? error.getField() + " 不合法" : msg;
+        String text = (msg == null || msg.isBlank()) ? error.getField() + " 不合法" : msg;
+        return new FieldErrorDetail(error.getField(), text);
     }
 }

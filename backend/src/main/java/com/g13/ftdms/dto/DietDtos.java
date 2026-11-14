@@ -2,8 +2,6 @@ package com.g13.ftdms.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.g13.ftdms.common.validation.ValidationPatterns;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -42,8 +40,6 @@ public final class DietDtos {
             Long foodId,
 
             @NotNull(message = "摄入克重不能为空")
-            @DecimalMin(value = "1", message = "摄入克重需在 1–2000 g 之间")
-            @DecimalMax(value = "2000", message = "摄入克重需在 1–2000 g 之间")
             @Digits(integer = 4, fraction = 2, message = "摄入克重最多 2 位小数")
             BigDecimal grams
     ) {
@@ -58,8 +54,6 @@ public final class DietDtos {
             @Pattern(regexp = ValidationPatterns.MEAL, message = "餐次取值需为 BREAKFAST / LUNCH / DINNER / SNACK")
             String meal,
 
-            @DecimalMin(value = "1", message = "摄入克重需在 1–2000 g 之间")
-            @DecimalMax(value = "2000", message = "摄入克重需在 1–2000 g 之间")
             @Digits(integer = 4, fraction = 2, message = "摄入克重最多 2 位小数")
             BigDecimal grams
     ) {
