@@ -698,7 +698,6 @@
       periodDays: s.days,
       status: degraded ? "DEGRADED" : "SUCCESS",
       content: sections.map(x => "【" + x.t + "】" + x.b).join("\n"),
-      sections: sections,
       validDays: s.validDays,
       modelName: AI.model,
       modelVersion: AI.version,
@@ -712,12 +711,20 @@
         periodEnd: s.to,
         validDays: s.validDays,
         goal: { kcal: s.goal },
-        training: { planned: s.plans, completed: s.completed, cancelled: s.cancelled, completionRate: s.rate },
+        training: { plannedCount: s.plans, completedCount: s.completed, cancelledCount: s.cancelled, completionRate: s.rate, workoutCount: s.workoutCount, extraWorkoutCount: 0 },
         intake: { validDays: s.dietDays, avgKcal: s.avgKcal },
         weight: { validDays: s.bodyCount, first: s.first, last: s.last, change: s.change, sevenDayAvg: s.seven },
         notices: ["缺失日不计入均值", "完成率分母剔除已取消计划", "摘要不含姓名与手机号"]
       }
     };
+  }
+
+  // G4 响应不含 summaryJson；原型在本地留一份快照，用于模拟 G6 详情弹层
+  function parseSections(content){
+    return String(content || "").split("\n").map(line => {
+      const m = line.match(/^【([^】]+)】(.*)$/);
+      return m ? { t: m[1], b: m[2] } : null;
+    }).filter(Boolean);
   }
 
   function reportChip(status){
@@ -729,11 +736,18 @@
   function reportBody(r){
     if (r.status === "DEGRADED"){
       const j = r.summaryJson;
-      return '<div class="ai-sec"><h4>统计值（未生成解释）</h4><p>有效记录 ' + r.validDays + ' 天；训练计划 ' + j.training.planned +
-        ' 个、完成 ' + j.training.completed + ' 个；日均摄入 ' + (j.intake.avgKcal == null ? "无记录" : j.intake.avgKcal + " kcal") +
+      const tr = j.training || {};
+      const planned = tr.plannedCount != null ? tr.plannedCount : tr.planned;
+      const completed = tr.completedCount != null ? tr.completedCount : tr.completed;
+      return '<div class="ai-sec"><h4>统计值（未生成解释）</h4><p>有效记录 ' + r.validDays + ' 天；训练计划 ' + planned +
+        ' 个、完成 ' + completed + ' 个；日均摄入 ' + (j.intake.avgKcal == null ? "无记录" : j.intake.avgKcal + " kcal") +
         '；体重 ' + (j.weight.change == null ? "无记录" : "变化 " + j.weight.change + " kg") + '。</p></div>';
     }
-    return r.sections.map(x => '<div class="ai-sec"><h4>' + x.t + '</h4><p>' + x.b + '</p></div>').join("");
+    const sections = parseSections(r.content);
+    if (!sections.length) {
+      return '<div class="ai-sec"><h4>分析正文</h4><p>' + (r.content || "") + '</p></div>';
+    }
+    return sections.map(x => '<div class="ai-sec"><h4>' + x.t + '</h4><p>' + x.b + '</p></div>').join("");
   }
 
   function renderAI(){
@@ -842,7 +856,7 @@
     if (m.type === "aiReport"){
       const r = state.ai.reports.find(x => String(x.id) === String(m.id));
       if (!r) return "";
-      const detail = r.status === "SUCCESS" ? r.sections.map(x => '<div class="ai-sec"><h4>' + x.t + '</h4><p>' + x.b + '</p></div>').join("") : reportBody(r);
+      const detail = reportBody(r);
       body = '<div class="sheet"><div class="grab"></div><div class="row"><h2>' + r.periodStart + ' → ' + r.periodEnd + '</h2>' + reportChip(r.status) + '</div>' +
         '<p class="sheet-sub">' + r.periodDays + ' 天区间 · 有效 ' + r.validDays + ' 天 · ' + r.createdAt + '<br>' + r.modelName + ' · ' + r.modelVersion + '</p>' +
         detail +
