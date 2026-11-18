@@ -26,6 +26,10 @@ frontend/.env.*.local
 # 文档流水线中间产物（可由源材料重新生成）
 output/
 
+# 评审 PPT 生成工具的缓存与日志（含本机路径，不入库）
+.cache/
+.slidep/
+
 # 后端构建产物与本地演示数据库
 backend/target/
 backend/data/

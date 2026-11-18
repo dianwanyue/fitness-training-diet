@@ -1,0 +1,35 @@
+<Slide style={{ width: '1280px', height: '720px', padding: '60px', background: '#FFFFFF', fontFamily: 'Microsoft YaHei', display: 'flex', flexDirection: 'column' }}>
+    <Box style={{ height: 46, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box style={{ flexDirection: 'row', alignItems: 'baseline', gap: 18 }}>
+            <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#14563F' }}>目录</Text>
+            <Text style={{ fontSize: 16, color: '#5A6B61' }}>依据总体设计报告 V1.0 章节展开</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Text style={{ fontSize: 14, color: '#5A6B61' }}>FTDMS · 总体设计报告</Text>
+            <Image src="assets/logo_icon.png" style={{ width: 36, height: 36, objectFit: 'contain' }} />
+        </Box>
+    </Box>
+    <Box style={{ height: 1, background: '#CFD9D2', marginTop: 8, marginBottom: 22 }} />
+    <Box style={{ height: 492, flexDirection: 'row', gap: 60 }}>
+        <Box style={{ width: 550, flexDirection: 'column', gap: 26 }}>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>01</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>报告定位与设计基线</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>02</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>设计目标、约束与原理</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>03</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>技术路线与关键决策</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>04</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>设计输入与业务规则</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>05</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>系统总体架构</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>06</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>软件结构与模块划分</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>07</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>模块独立性与数据流设计</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>08</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>接口设计：8 族 43 个接口</Text></Box>
+        </Box>
+        <Box style={{ width: 550, flexDirection: 'column', gap: 26 }}>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>09</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>数据设计：12 张业务表</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>10</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>详细设计：业务模块</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>11</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>详细设计：AI 分析模块</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>12</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>测试设计与验证结果</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>13</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>用户文档与八屏操作</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>14</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>需求追踪、基线与交付物</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>15</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>参考资料</Text></Box>
+            <Box style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold', color: '#14563F', width: 42 }}>16</Text><Text style={{ fontSize: 18, color: '#1C2A24' }}>小组成员分工与评价</Text></Box>
+        </Box>
+    </Box>
+</Slide>
